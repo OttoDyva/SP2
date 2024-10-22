@@ -21,6 +21,7 @@
 
         <!--  Javalin    -->
         <javalin.port>5432</javalin.port>
+        <db.name>bars</db.name>
     </properties>
 
     <repositories>
