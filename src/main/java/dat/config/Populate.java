@@ -1,6 +1,6 @@
 package dat.config;
 
-
+/*
 import dat.entities.Hotel;
 import dat.entities.Room;
 import jakarta.persistence.EntityManagerFactory;
@@ -55,3 +55,5 @@ public class Populate {
         return Set.of(roomArray);
     }
 }
+
+ */
