@@ -13,6 +13,7 @@ import java.util.Properties;
 
 public class HibernateConfig {
 
+
     private static EntityManagerFactory emf;
     private static EntityManagerFactory emfTest;
     private static Boolean isTest = false;
