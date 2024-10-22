@@ -17,6 +17,7 @@ import java.util.Properties;
  * Purpose: Utility class to read properties from a file
  * Author: Thomas Hartmann
  */
+
 public class Utils {
     public static void main(String[] args) {
         System.out.println(getPropertyValue("db.name", "properties-from-pom.properties"));
@@ -59,4 +60,5 @@ public class Utils {
             return "{\"error\": \"Could not convert  message to JSON\"}";
         }
     }
+
 }

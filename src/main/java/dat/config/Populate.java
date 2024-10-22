@@ -1,13 +1,12 @@
-/*
+
 package dat.config;
 
-/*
-import dat.entities.Hotel;
-import dat.entities.Room;
+import dat.entities.Author;
+import dat.entities.Bars;
+import dat.entities.Genre;
 import jakarta.persistence.EntityManagerFactory;
 import org.jetbrains.annotations.NotNull;
-
-import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Set;
 
 public class Populate {
@@ -15,46 +14,68 @@ public class Populate {
 
         EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory();
 
-        Set<Room> calRooms = getCalRooms();
-        Set<Room> hilRooms = getHilRooms();
+        Set<Bars> barsForAuthor1 = getBarsForAuthor1();
+        Set<Bars> barsForAuthor2 = getBarsForAuthor2();
 
         try (var em = emf.createEntityManager()) {
             em.getTransaction().begin();
-            Hotel california = new Hotel("Hotel California", "California", Hotel.HotelType.LUXURY);
-            Hotel hilton = new Hotel("Hilton", "Copenhagen", Hotel.HotelType.STANDARD);
-            california.setRooms(calRooms);
-            hilton.setRooms(hilRooms);
-            em.persist(california);
-            em.persist(hilton);
+
+            Author author1 = new Author();
+            author1.setName("David Bekhan");
+            author1.setDescription("Famous for philosophy writings");
+            author1.setBars(barsForAuthor1);
+
+            Author author2 = new Author();
+            author2.setName("Otto von Bismarck");
+            author2.setDescription("Known for motivational speeches");
+            author2.setBars(barsForAuthor2);
+
+            barsForAuthor1.forEach(bar -> bar.setAuthor(author1));
+            barsForAuthor2.forEach(bar -> bar.setAuthor(author2));
+
+            em.persist(author1);
+            em.persist(author2);
+
             em.getTransaction().commit();
         }
     }
 
     @NotNull
-    private static Set<Room> getCalRooms() {
-        Room r100 = new Room(100, new BigDecimal(2520), Room.RoomType.SINGLE);
-        Room r101 = new Room(101, new BigDecimal(2520), Room.RoomType.SINGLE);
-        Room r102 = new Room(102, new BigDecimal(2520), Room.RoomType.SINGLE);
-        Room r103 = new Room(103, new BigDecimal(2520), Room.RoomType.SINGLE);
-        Room r104 = new Room(104, new BigDecimal(3200), Room.RoomType.DOUBLE);
-        Room r105 = new Room(105, new BigDecimal(4500), Room.RoomType.SUITE);
+    private static Set<Bars> getBarsForAuthor1() {
+        Bars bar1 = new Bars();
+        bar1.setTitle("Philosophy in a Nutshell");
+        bar1.setContent("Philosophy is the study of existence...");
+        bar1.setDate(LocalDate.of(2023, 5, 14));
+        bar1.setGenre(Genre.PHILOSOPHY);
 
-        Room[] roomArray = {r100, r101, r102, r103, r104, r105};
-        return Set.of(roomArray);
+        Bars bar2 = new Bars();
+        bar2.setTitle("The Poem of the Moon");
+        bar2.setContent("Oh moon, so bright and high...");
+        bar2.setDate(LocalDate.of(2022, 3, 21));
+        bar2.setGenre(Genre.POEM);
+
+        Bars[] barsArray = {bar1, bar2};
+        return Set.of(barsArray);
     }
 
     @NotNull
-    private static Set<Room> getHilRooms() {
-        Room r111 = new Room(111, new BigDecimal(2520), Room.RoomType.SINGLE);
-        Room r112 = new Room(112, new BigDecimal(2520), Room.RoomType.SINGLE);
-        Room r113 = new Room(113, new BigDecimal(2520), Room.RoomType.SINGLE);
-        Room r114 = new Room(114, new BigDecimal(2520), Room.RoomType.DOUBLE);
-        Room r115 = new Room(115, new BigDecimal(3200), Room.RoomType.DOUBLE);
-        Room r116 = new Room(116, new BigDecimal(4500), Room.RoomType.SUITE);
+    private static Set<Bars> getBarsForAuthor2() {
+        Bars bar1 = new Bars();
+        bar1.setTitle("Motivational Speech 101");
+        bar1.setContent("Success is not final, failure is not fatal...");
+        bar1.setDate(LocalDate.of(2024, 1, 10));
+        bar1.setGenre(Genre.MOTIVATIONAL);
 
-        Room[] roomArray = {r111, r112, r113, r114, r115, r116};
-        return Set.of(roomArray);
+        Bars bar2 = new Bars();
+        bar2.setTitle("Humor in the Modern Age");
+        bar2.setContent("Why did the chicken cross the road?");
+        bar2.setDate(LocalDate.of(2024, 4, 1));
+        bar2.setGenre(Genre.HUMOR);
+
+        Bars[] barsArray = {bar1, bar2};
+        return Set.of(barsArray);
     }
 }
-*/
+
+
 
