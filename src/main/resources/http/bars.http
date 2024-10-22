@@ -1,0 +1,3 @@
+GET {{URL}}/bars
+
+GET {{URL}}/bars/2
