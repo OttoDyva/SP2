@@ -12,7 +12,7 @@ import java.util.Set;
 public class Populate {
     public static void main(String[] args) {
 
-        EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory();
+        EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory("bars");
 
         Set<Bars> barsForAuthor1 = getBarsForAuthor1();
         Set<Bars> barsForAuthor2 = getBarsForAuthor2();
