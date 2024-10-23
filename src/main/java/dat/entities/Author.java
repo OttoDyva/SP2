@@ -10,10 +10,8 @@ import java.util.Set;
 @Table(name="author")
 @Data
 @Builder
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,5 +25,7 @@ public class Author {
     private String description;
 
     @OneToMany(mappedBy = "author", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ToString.Exclude  // Exclude from toString to avoid circular reference
+    @EqualsAndHashCode.Exclude  // Exclude from equals and hashCode to avoid circular reference
     private Set<Bars> bars = new HashSet<>();
 }
