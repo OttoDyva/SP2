@@ -3,7 +3,7 @@ GET {{url}}/bars
 
 ### Find bar by id
 
-GET {{url}}/bars/4
+GET {{url}}/bars/6
 
 ### Create a Bar
 
