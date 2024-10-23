@@ -2,6 +2,9 @@ package dat.daos;
 
 import dat.config.HibernateConfig;
 import dat.config.Populate;
+import dat.dtos.AuthorDTO;
+import dat.dtos.BarsDTO;
+import dat.entities.Author;
 import dat.entities.Bars;
 import dat.entities.Genre;
 import jakarta.persistence.EntityManagerFactory;
@@ -12,17 +15,22 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BarsDAOTest {
 
     private BarsDAO barsDAO;
     private EntityManagerFactory emf;
+    private AuthorDAO authorDAO;
 
     @BeforeAll
     void setUp() {
-        emf = HibernateConfig.getEntityManagerFactoryForTest();
+        emf = HibernateConfig.getEntityManagerFactory("bars");
         barsDAO = new BarsDAO(emf);
+        authorDAO = AuthorDAO.getInstance(emf);
         Populate.main(null);
     }
 
@@ -35,11 +43,22 @@ class BarsDAOTest {
 
     @Test
     void create() {
-        Bars newBar = new Bars();
-        newBar.setTitle("New Bar Title");
-        newBar.setContent("Content of the new bar.");
-        newBar.setDate(LocalDate.of(2024, 10, 22));
-        newBar.setGenre(Genre.PHILOSOPHY);
+        List<AuthorDTO> authors = authorDAO.getAllAuthors();
+        assertFalse(authors.isEmpty(), "Author list should not be empty for creating a bar.");
+
+        AuthorDTO authorDTO = authors.get(0);
+        Author author = new Author(authorDTO);
+
+        BarsDTO newBarDTO = new BarsDTO();
+        newBarDTO.setTitle("New Bar Title");
+        newBarDTO.setContent("Content of the new bar.");
+        newBarDTO.setDate(LocalDate.of(2024, 10, 22));
+        newBarDTO.setGenre(Genre.PHILOSOPHY);
+        newBarDTO.setAuthorName(author.getName());
+        newBarDTO.setAuthorDescription(author.getDescription());
+
+        Bars newBar = new Bars(newBarDTO);
+        newBar.setAuthor(author);
 
         barsDAO.create(newBar);
         Bars retrievedBar = barsDAO.findBarsById(newBar.getId());
@@ -57,6 +76,8 @@ class BarsDAOTest {
     @Test
     void findBarsById() {
         List<Bars> barsList = barsDAO.getAllBars();
+        assertFalse(barsList.isEmpty(), "Bars list should not be empty for finding by ID.");
+
         Bars firstBar = barsList.get(0);
         Bars foundBar = barsDAO.findBarsById(firstBar.getId());
 
@@ -67,11 +88,14 @@ class BarsDAOTest {
     @Test
     void updateBars() {
         List<Bars> barsList = barsDAO.getAllBars();
+        assertFalse(barsList.isEmpty(), "Bars list should not be empty after population.");
+
         Bars barToUpdate = barsList.get(0);
         barToUpdate.setTitle("Updated Title");
 
         Bars updatedBar = barsDAO.updateBars(barToUpdate);
-        assertThat(updatedBar.getTitle(), is("Updated Title"));
+        assertNotNull(updatedBar);
+        assertEquals("Updated Title", updatedBar.getTitle());
     }
 
     @Test
@@ -82,10 +106,18 @@ class BarsDAOTest {
         newBar.setDate(LocalDate.of(2024, 10, 23));
         newBar.setGenre(Genre.PHILOSOPHY);
 
-        barsDAO.create(newBar);
-        barsDAO.deleteById(newBar.getId());
+        List<AuthorDTO> authors = authorDAO.getAllAuthors();
+        assertFalse(authors.isEmpty(), "Author list should not be empty for creating a bar.");
+        AuthorDTO authorDTO = authors.get(0);
+        Author author = new Author(authorDTO);
+        newBar.setAuthor(author);
 
-        Bars deletedBar = barsDAO.findBarsById(newBar.getId());
+        barsDAO.create(newBar);
+        int createdBarId = newBar.getId();
+
+        barsDAO.deleteById(createdBarId);
+
+        Bars deletedBar = barsDAO.findBarsById(createdBarId);
         assertThat(deletedBar, is(nullValue()));
     }
 }
