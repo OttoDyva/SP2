@@ -1,9 +1,8 @@
 package dat.dtos;
 
 import dat.entities.Bars;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import dat.entities.Genre;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -15,15 +14,17 @@ public class BarsDTO {
     private String title;
     private String content;
     private LocalDate date;
-    private String genre;
-    private Integer authorId;
+    private Genre genre;
+    private String authorName;
+    private String authorDescription;
 
     public BarsDTO(Bars bars) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.date = date;
-        this.genre = genre;
-        this.authorId = authorId;
+        this.id = bars.getId();
+        this.title = bars.getTitle();
+        this.content = bars.getContent();
+        this.date = bars.getDate();
+        this.genre = bars.getGenre();
+        this.authorName = bars.getAuthor() != null ? bars.getAuthor().getName() : null;
+        this.authorDescription = bars.getAuthor() != null ? bars.getAuthor().getDescription() : null;
     }
 }

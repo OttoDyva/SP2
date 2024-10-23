@@ -42,6 +42,6 @@ public class Bars {
         this.title = barsDTO.getTitle();
         this.content = barsDTO.getContent();
         this.date = barsDTO.getDate();
-        this.genre = Genre.valueOf(barsDTO.getGenre());
+        this.genre = Genre.valueOf(String.valueOf(barsDTO.getGenre()));
     }
 }
