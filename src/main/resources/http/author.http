@@ -1,3 +1,28 @@
-### Get Author by id
+### Create author
+POST {{url}}/authors
+Content-Type: application/json
 
+{
+    "name": "Rascal Flatts",
+    "description": "Singer"
+}
+
+### Get Author by id
 GET {{url}}/authors/1
+
+
+### Get all Authors
+GET {{url}}/authors
+
+
+### Update Author by id
+PUT {{url}}/authors/1
+Content-Type: application/json
+
+{
+    "name": "David Bekhan",
+    "description": "Athlete"
+}
+
+### Delete Author by id
+DELETE {{url}}/authors/1

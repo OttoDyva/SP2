@@ -9,6 +9,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.TypedQuery;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AuthorDAO {
     private static EntityManagerFactory emf;
@@ -28,19 +29,41 @@ public class AuthorDAO {
     }
 
     public AuthorDTO create(AuthorDTO authorDTO) {
-        try (EntityManager em = emf.createEntityManager()) {
+        EntityManager em = emf.createEntityManager();
+        try {
             em.getTransaction().begin();
-            Author author = new Author(authorDTO);
+
+            // Convert DTO to Entity
+            Author author = new Author();
+            author.setName(authorDTO.getName());
+            author.setDescription(authorDTO.getDescription());
+
+            // Persist the new Author entity
             em.persist(author);
             em.getTransaction().commit();
+
+            // Return DTO of the persisted entity
             return new AuthorDTO(author);
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
+        } finally {
+            em.close();
         }
     }
 
-    public List<Author> getAllAuthors() {
+
+    public List<AuthorDTO> getAllAuthors() {
         try (EntityManager em = emf.createEntityManager()) {
             TypedQuery<Author> query = em.createQuery("FROM Author", Author.class);
-            return query.getResultList();
+            List<Author> authors = query.getResultList();
+
+            // Convert List of Authors to List of AuthorDTOs
+            return authors.stream()
+                    .map(AuthorDTO::new)
+                    .collect(Collectors.toList());
         }
     }
 
@@ -50,9 +73,9 @@ public class AuthorDAO {
         }
     }
 
-    public AuthorDTO updateAuthor(Integer integer, AuthorDTO authorDTO) {
+    public AuthorDTO updateAuthor(Integer id, AuthorDTO authorDTO) {
         try (EntityManager em = emf.createEntityManager()) {
-            AuthorDTO found = em.find(AuthorDTO.class, authorDTO.getId());
+            Author found = em.find(Author.class, id);  // Fetch the Author entity
             if (found == null) {
                 throw new EntityNotFoundException("No author found with that ID");
             }
@@ -65,17 +88,20 @@ public class AuthorDAO {
                 found.setDescription(authorDTO.getDescription());
             }
             em.getTransaction().commit();
-            return found;
+
+            return new AuthorDTO(found);  // Return the updated Author as a DTO
         }
     }
 
-    public void deleteById(Integer integer) {
+
+    public void deleteById(Integer id) {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
-            Author author = em.find(Author.class, integer);
-            if (author != null) {
-                em.remove(author);
+            Author author = em.find(Author.class, id);
+            if (author == null) {
+                throw new EntityNotFoundException("No author found with ID: " + id);
             }
+            em.remove(author);
             em.getTransaction().commit();
         }
     }

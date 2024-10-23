@@ -6,6 +6,7 @@ import dat.dtos.AuthorDTO;
 import dat.entities.Author;
 import io.javalin.http.Context;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;
 
@@ -29,43 +30,66 @@ public class AuthorController {
         ctx.json(authorDTO, AuthorDTO.class);
     }
 
-    /*
     public void getAllAuthors(Context ctx) {
-        // List of DTOS
-        List<AuthorDTO> hotelDTOS = authorDAO.getAllAuthors();
-        // response
-        ctx.res().setStatus(200);
-        ctx.json(hotelDTOS, HotelDTO.class);
-    }
+        try {
+            // Fetch all authors from the DAO
+            List<AuthorDTO> authorList = authorDAO.getAllAuthors();
 
-     */
+            // Respond with the list of authors
+            ctx.status(200).json(authorList);
+        } catch (Exception e) {
+            ctx.status(500).result("Error fetching authors: " + e.getMessage());
+            e.printStackTrace();  // Log the error for debugging
+        }
+    }
 
     public void create(Context ctx) {
-        // request
-        AuthorDTO jsonRequest = ctx.bodyAsClass(AuthorDTO.class);
-        // DTO
-        AuthorDTO authorDTO = authorDAO.create(jsonRequest);
-        // response
-        ctx.res().setStatus(201);
-        ctx.json(authorDTO, AuthorDTO.class);
+        try {
+            // Validate the request body and map it to AuthorDTO
+            AuthorDTO jsonRequest = ctx.bodyValidator(AuthorDTO.class)
+                    .check(dto -> dto.getName() != null && !dto.getName().isEmpty(), "Author name must be set")
+                    .check(dto -> dto.getDescription() != null && !dto.getDescription().isEmpty(), "Author description must be set")
+                    .get();
+
+            // Create the author using DAO
+            AuthorDTO authorDTO = authorDAO.create(jsonRequest);
+
+            // Respond with the created author
+            ctx.status(201).json(authorDTO);
+        } catch (Exception e) {
+            ctx.status(500).result("Error creating author: " + e.getMessage());  // Respond with a 500 error and message
+            e.printStackTrace();  // Log the stack trace for debugging
+        }
     }
+
 
     public void updateAuthor(Context ctx) {
         // request
         int id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
         // dto
-        AuthorDTO authorDTO = authorDAO.updateAuthor(id, validateEntity(ctx));
+        AuthorDTO updatedAuthor = authorDAO.updateAuthor(id, validateEntity(ctx));
         // response
         ctx.res().setStatus(200);
-        ctx.json(authorDTO, Author.class);
+        ctx.json(updatedAuthor);
     }
 
     public void deleteByID(Context ctx) {
-        // request
-        int id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
-        authorDAO.deleteById(id);
-        // response
-        ctx.res().setStatus(204);
+        try {
+            // Extract the author ID from the path parameter
+            int id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid ID").get();
+
+            // Call the DAO to delete the author
+            authorDAO.deleteById(id);
+
+            // Respond with 204 No Content (success)
+            ctx.status(204);
+        } catch (EntityNotFoundException e) {
+            // Handle the case where the author is not found
+            ctx.status(404).result("Author not found: " + e.getMessage());
+        } catch (Exception e) {
+            // Handle other potential exceptions
+            ctx.status(500).result("Error deleting author: " + e.getMessage());
+        }
     }
 
     public boolean validatePrimaryKey(Integer integer) {
