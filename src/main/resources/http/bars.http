@@ -1,14 +1,19 @@
 ### Get all bars from the database
 GET {{url}}/bars
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
 
 ### Find bar by id
 
-GET {{url}}/bars/4
+GET {{url}}/bars/7
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
 
 ### Create a Bar
 
 POST {{url}}/bars
 Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
 
 {
   "title": "",
@@ -21,5 +26,14 @@ Content-Type: application/json
 
 ### Delete a bar
 DELETE {{url}}/bars/5
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
 
+### Reset token
+GET {{url}}/auth/test/
+
+> {%
+    client.global.set("jwt_token", null);
+    console.log("JWT Token:", client.global.get("jwt_token"));
+%}
 

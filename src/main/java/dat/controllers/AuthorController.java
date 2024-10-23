@@ -102,4 +102,5 @@ public class AuthorController {
                 .check( a -> a.getDescription() != null && !a.getDescription().isEmpty(), "Author description must be set")
                 .get();
     }
+
 }
