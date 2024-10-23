@@ -1,16 +1,19 @@
-/*
 package dat.daos;
 
 import dat.config.HibernateConfig;
 import dat.config.Populate;
+import dat.dtos.AuthorDTO;
 import dat.entities.Author;
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.*;
 
 import java.util.List;
 
+import static junit.framework.TestCase.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AuthorDAOTest {
@@ -21,9 +24,10 @@ class AuthorDAOTest {
     @BeforeAll
     void setUp() {
         emf = HibernateConfig.getEntityManagerFactoryForTest();
-        authorDAO = new AuthorDAO(emf);
+        authorDAO = AuthorDAO.getInstance(emf);
         Populate.main(null);
     }
+
 
     @AfterAll
     void tearDown() {
@@ -34,54 +38,71 @@ class AuthorDAOTest {
 
     @Test
     void create() {
-        Author newAuthor = new Author();
-        newAuthor.setName("newName");
-        newAuthor.setDescription("bingbong");
+        AuthorDTO newAuthorDTO = AuthorDTO.builder()
+                .name("New Author")
+                .description("Description of the new author")
+                .build();
 
-        authorDAO.create(newAuthor);
-        Author retrievedAuthor = authorDAO.findAuthorById(newAuthor.getId());
+        AuthorDTO createdAuthorDTO = authorDAO.create(newAuthorDTO);
+        AuthorDTO retrievedAuthorDTO = new AuthorDTO(authorDAO.findAuthorById(createdAuthorDTO.getId()));
 
-        assertThat(retrievedAuthor, is(notNullValue()));
-        assertThat(retrievedAuthor.getName(), is("newName"));
+        assertThat(retrievedAuthorDTO, is(notNullValue()));
+        assertThat(retrievedAuthorDTO.getName(), is("New Author"));
     }
 
     @Test
     void getAllAuthors() {
-        List<Author> authorList = authorDAO.getAllAuthors();
+        List<AuthorDTO> authorList = authorDAO.getAllAuthors();
         assertThat(authorList, is(not(empty())));
     }
 
     @Test
     void findAuthorById() {
-        List<Author> authorList = authorDAO.getAllAuthors();
-        Author firstAuthor = authorList.get(0);
-        Author foundAuthor = authorDAO.findAuthorById(firstAuthor.getId());
+        List<AuthorDTO> authorList = authorDAO.getAllAuthors();
+        AuthorDTO firstAuthor = authorList.get(0);
+        AuthorDTO foundAuthorDTO = new AuthorDTO(authorDAO.findAuthorById(firstAuthor.getId()));
 
-        assertThat(foundAuthor, is(notNullValue()));
-        assertThat(foundAuthor.getName(), is(firstAuthor.getName()));
+        assertThat(foundAuthorDTO, is(notNullValue()));
+        assertThat(foundAuthorDTO.getName(), is(firstAuthor.getName()));
     }
 
     @Test
-    void updateAuthor() {
-        List<Author> authorList = authorDAO.getAllAuthors();
-        Author authorToUpdate = authorList.get(0);
-        authorToUpdate.setName("newName");
+    void testUpdateAuthor() {
+        List<AuthorDTO> authorList = authorDAO.getAllAuthors();
+        assertFalse(authorList.isEmpty(), "Author list should not be empty after population.");
 
-        Author updatedAuthor = authorDAO.updateAuthor(authorToUpdate);
-        assertThat(updatedAuthor.getName(), is("newName"));
+        // Get the first author for testing
+        AuthorDTO existingAuthorDTO = authorList.get(0);
+
+        AuthorDTO updatedAuthorDTO = AuthorDTO.builder()
+                .name("Updated Name")
+                .description("Updated Description")
+                .build();
+
+        AuthorDTO updated = authorDAO.updateAuthor(existingAuthorDTO.getId(), updatedAuthorDTO);
+
+        assertNotNull(updated);
+        assertEquals("Updated Name", updated.getName());
+        assertEquals("Updated Description", updated.getDescription());
     }
+
+
+
 
     @Test
     void deleteById() {
-        Author newAuthor = new Author();
-        newAuthor.setName("newAuthor");
-        newAuthor.setDescription("kill");
+        AuthorDTO newAuthorDTO = AuthorDTO.builder()
+                .name("Author To Delete")
+                .description("This author will be deleted")
+                .build();
 
-        authorDAO.create(newAuthor);
-        authorDAO.deleteById(newAuthor.getId());
+        AuthorDTO createdAuthorDTO = authorDAO.create(newAuthorDTO);
+        int createdAuthorId = createdAuthorDTO.getId();
 
-        Author deletedAuthor = authorDAO.findAuthorById(newAuthor.getId());
+        authorDAO.deleteById(createdAuthorId);
+
+        Author deletedAuthor = authorDAO.findAuthorById(createdAuthorId);
         assertThat(deletedAuthor, is(nullValue()));
     }
+
 }
-*/

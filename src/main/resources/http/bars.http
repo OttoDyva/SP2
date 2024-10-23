@@ -1,7 +1,5 @@
 ### Get all bars from the database
 GET {{url}}/bars
-Content-Type: application/json
-Authorization: Bearer {{jwt_token}}
 
 ### Find bar by id
 

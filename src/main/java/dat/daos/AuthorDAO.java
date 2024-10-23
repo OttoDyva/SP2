@@ -33,16 +33,13 @@ public class AuthorDAO {
         try {
             em.getTransaction().begin();
 
-            // Convert DTO to Entity
             Author author = new Author();
             author.setName(authorDTO.getName());
             author.setDescription(authorDTO.getDescription());
 
-            // Persist the new Author entity
             em.persist(author);
             em.getTransaction().commit();
 
-            // Return DTO of the persisted entity
             return new AuthorDTO(author);
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
@@ -54,13 +51,11 @@ public class AuthorDAO {
         }
     }
 
-
     public List<AuthorDTO> getAllAuthors() {
         try (EntityManager em = emf.createEntityManager()) {
             TypedQuery<Author> query = em.createQuery("FROM Author", Author.class);
             List<Author> authors = query.getResultList();
 
-            // Convert List of Authors to List of AuthorDTOs
             return authors.stream()
                     .map(AuthorDTO::new)
                     .collect(Collectors.toList());
@@ -75,7 +70,7 @@ public class AuthorDAO {
 
     public AuthorDTO updateAuthor(Integer id, AuthorDTO authorDTO) {
         try (EntityManager em = emf.createEntityManager()) {
-            Author found = em.find(Author.class, id);  // Fetch the Author entity
+            Author found = em.find(Author.class, id);
             if (found == null) {
                 throw new EntityNotFoundException("No author found with that ID");
             }
@@ -89,7 +84,7 @@ public class AuthorDAO {
             }
             em.getTransaction().commit();
 
-            return new AuthorDTO(found);  // Return the updated Author as a DTO
+            return new AuthorDTO(found);
         }
     }
 
