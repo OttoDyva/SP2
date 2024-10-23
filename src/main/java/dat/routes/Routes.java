@@ -11,7 +11,7 @@ public class Routes {
 
     public EndpointGroup getRoutes() {
         return () -> {
-                //path("/bars", barsRoute.getRoutes());
+                path("/bars", barsRoute.getRoutes());
                 path("/authors", authorRoute.getRoutes());
         };
     }

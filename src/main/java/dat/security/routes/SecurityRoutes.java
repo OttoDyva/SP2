@@ -26,6 +26,7 @@ public class SecurityRoutes {
             });
         };
     }
+
     public static EndpointGroup getSecuredRoutes(){
         return ()->{
             path("/protected", ()->{

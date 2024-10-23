@@ -1,3 +1,4 @@
+/*
 package dat.utils;
 
 import dat.dtos.AuthorDTO;
@@ -38,7 +39,7 @@ public class DTOAndEntityConverter {
         );
     }
 
-    private Bars convertBarsDTOToBarsEntity(BarsDTO barsDTO) {
+    public Bars convertBarsDTOToBarsEntity(BarsDTO barsDTO) {
         if (barsDTO == null) {
             return null;
         }
@@ -53,7 +54,7 @@ public class DTOAndEntityConverter {
                 .build();
     }
 
-    private BarsDTO convertBarsEntityToBarsDTO(Bars bars) {
+    public BarsDTO convertBarsEntityToBarsDTO(Bars bars) {
         if (bars == null) {
             return null;
         }
@@ -81,3 +82,4 @@ public class DTOAndEntityConverter {
                 .collect(Collectors.toSet());
     }
 }
+*/
