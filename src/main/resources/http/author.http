@@ -1,0 +1,3 @@
+### Get Author by id
+
+GET {{url}}/authors/1

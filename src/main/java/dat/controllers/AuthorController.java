@@ -3,6 +3,7 @@ package dat.controllers;
 import dat.config.HibernateConfig;
 import dat.daos.AuthorDAO;
 import dat.dtos.AuthorDTO;
+import dat.entities.Author;
 import io.javalin.http.Context;
 import jakarta.persistence.EntityManagerFactory;
 
@@ -19,7 +20,8 @@ public class AuthorController {
         // request
         int id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
         // DTO
-        AuthorDTO authorDTO = authorDAO.findAuthorById(id);
+        Author author = authorDAO.findAuthorById(id);
+        AuthorDTO authorDTO = new AuthorDTO(author);
         // response
         ctx.res().setStatus(200);
         ctx.json(authorDTO, AuthorDTO.class);
