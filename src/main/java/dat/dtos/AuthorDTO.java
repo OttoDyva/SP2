@@ -10,7 +10,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthorDTO {
-    private Long id;
+    private Integer id;
     private String name;
     private String description;
     private Set<BarsDTO> bars;

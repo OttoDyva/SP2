@@ -10,10 +10,10 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BarsDTO {
-    private Long id;
+    private Integer id;
     private String title;
     private String content;
     private LocalDate date;
     private String genre;
-    private Long authorId;
+    private Integer authorId;
 }

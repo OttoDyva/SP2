@@ -2,6 +2,8 @@ package dat.config;
 
 import dat.entities.Author;
 import dat.entities.Bars;
+
+import dat.utils.Utils;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -46,7 +48,7 @@ public class HibernateConfig {
                 setDeployedProperties(props, DBName);
             }
             else {
-                props = setDevProperties(props, DBName);
+                props = setDevProperties(props);
             }
             configuration.setProperties(props);
             getAnnotationConfiguration(configuration);
@@ -78,7 +80,8 @@ public class HibernateConfig {
         props.setProperty("hibernate.connection.password", System.getenv("DB_PASSWORD"));
         return props;
     }
-    private static Properties setDevProperties(Properties props, String DBName){
+    private static Properties setDevProperties(Properties props){
+        String DBName = Utils.getPropertyValue("DB_NAME", "config.properties");
         props.put("hibernate.connection.url", "jdbc:postgresql://64.226.120.63:5432/"+ DBName);
         props.put("hibernate.connection.username", "postgres");
         props.put("hibernate.connection.password", "gruppebroersej");

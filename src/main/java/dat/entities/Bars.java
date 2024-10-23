@@ -17,7 +17,7 @@ public class Bars {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bars_id", nullable = false)
-    private Long id;
+    private Integer id;
 
     @Column(name = "title", nullable = false)
     private String title;

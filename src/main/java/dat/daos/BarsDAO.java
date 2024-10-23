@@ -30,7 +30,7 @@ public class BarsDAO {
         }
     }
 
-    public Bars findBarsById(Long id) {
+    public Bars findBarsById(int id) {
         try (EntityManager em = emf.createEntityManager()) {
             return em.find(Bars.class, id);
         }
@@ -61,10 +61,10 @@ public class BarsDAO {
         }
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(Integer integer) {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
-            Bars bars = findBarsById(id);
+            Bars bars = findBarsById(integer);
             if (bars != null) {
                 em.remove(bars);
             }

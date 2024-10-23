@@ -1,6 +1,7 @@
 package dat.daos;
 
 
+import dat.dtos.AuthorDTO;
 import dat.entities.Author;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -10,10 +11,20 @@ import jakarta.persistence.TypedQuery;
 import java.util.List;
 
 public class AuthorDAO {
-    private EntityManagerFactory emf;
+    private static EntityManagerFactory emf;
+
+    private static AuthorDAO instance;
 
     public AuthorDAO(EntityManagerFactory emf) {
         this.emf = emf;
+    }
+
+    public static AuthorDAO getInstance(EntityManagerFactory _emf) {
+        if (instance == null) {
+            emf = _emf;
+            instance = new AuthorDAO(emf);
+        }
+        return instance;
     }
 
     public void create(Author author) {
@@ -31,9 +42,9 @@ public class AuthorDAO {
         }
     }
 
-    public Author findAuthorById(Long id) {
+    public AuthorDTO findAuthorById(int id) {
         try (EntityManager em = emf.createEntityManager()) {
-            return em.find(Author.class, id);
+            return em.find(AuthorDTO.class, id);
         }
     }
 
@@ -56,14 +67,21 @@ public class AuthorDAO {
         }
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(Integer integer) {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
-            Author author = findAuthorById(id);
+            Author author = em.find(Author.class, integer);
             if (author != null) {
                 em.remove(author);
             }
             em.getTransaction().commit();
+        }
+    }
+
+    public boolean validatePrimaryKey(Integer integer) {
+        try (EntityManager em = emf.createEntityManager()) {
+            Author author = em.find(Author.class, integer);
+            return author != null;
         }
     }
 }
