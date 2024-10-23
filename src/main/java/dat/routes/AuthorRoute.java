@@ -13,11 +13,11 @@ public class AuthorRoute {
     protected EndpointGroup getRoutes() {
 
         return () -> {
-            post("/", authorController::create, Role.USER);
-            get("/", authorController::getAllAuthors);
-            get("/{id}", authorController::findAuthorById);
-            put("/{id}", authorController::updateAuthor);
-            delete("/{id}", authorController::deleteByID);
+            post("/", authorController::create, Role.USER, Role.ADMIN);
+            get("/", authorController::getAllAuthors, Role.ANYONE);
+            get("/{id}", authorController::findAuthorById, Role.ANYONE);
+            put("/{id}", authorController::updateAuthor, Role.ADMIN);
+            delete("/{id}", authorController::deleteByID, Role.ADMIN);
         };
     }
 }
