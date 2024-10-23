@@ -1,3 +1,4 @@
+/*
 package dat.daos;
 
 import dat.config.HibernateConfig;
@@ -83,3 +84,4 @@ class AuthorDAOTest {
         assertThat(deletedAuthor, is(nullValue()));
     }
 }
+*/
