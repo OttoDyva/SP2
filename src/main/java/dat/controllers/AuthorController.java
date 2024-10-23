@@ -22,7 +22,8 @@ public class AuthorController {
         // request
         int id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
         // DTO
-        AuthorDTO authorDTO = authorDAO.findAuthorById(id);
+        Author author = authorDAO.findAuthorById(id);
+        AuthorDTO authorDTO = new AuthorDTO(author);
         // response
         ctx.res().setStatus(200);
         ctx.json(authorDTO, AuthorDTO.class);

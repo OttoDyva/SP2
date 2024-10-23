@@ -44,9 +44,9 @@ public class AuthorDAO {
         }
     }
 
-    public AuthorDTO findAuthorById(int id) {
+    public Author findAuthorById(int id) {
         try (EntityManager em = emf.createEntityManager()) {
-            return em.find(AuthorDTO.class, id);
+            return em.find(Author.class, id);
         }
     }
 

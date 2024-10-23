@@ -1,7 +1,7 @@
 package dat.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-//import dat.routes.Routes;
+import dat.routes.Routes;
 import dat.security.controllers.AccessController;
 import dat.security.controllers.SecurityController;
 import dat.security.enums.Role;
@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 public class ApplicationConfig {
 
-    //private static Routes routes = new Routes();
+    private static Routes routes = new Routes();
     private static ObjectMapper jsonMapper = new Utils().getObjectMapper();
     private static SecurityController securityController = SecurityController.getInstance();
     private static AccessController accessController = new AccessController();
@@ -26,7 +26,7 @@ public class ApplicationConfig {
         config.showJavalinBanner = false;
         config.bundledPlugins.enableRouteOverview("/routes", Role.ANYONE);
         config.router.contextPath = "/api"; // base path for all endpoints
-        //config.router.apiBuilder(routes.getRoutes());
+        config.router.apiBuilder(routes.getRoutes());
         config.router.apiBuilder(SecurityRoutes.getSecuredRoutes());
         config.router.apiBuilder(SecurityRoutes.getSecurityRoutes());
     }
@@ -34,12 +34,16 @@ public class ApplicationConfig {
     public static Javalin startServer(int port) {
         Javalin app = Javalin.create(ApplicationConfig::configuration);
 
+        /*
         app.beforeMatched(accessController::accessHandler);
-
         app.beforeMatched(ctx -> accessController.accessHandler(ctx));
+
+
 
         app.exception(Exception.class, ApplicationConfig::generalExceptionHandler);
         app.exception(ApiException.class, ApplicationConfig::apiExceptionHandler);
+
+         */
         app.start(port);
         return app;
     }
