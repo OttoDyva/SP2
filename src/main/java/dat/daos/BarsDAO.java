@@ -26,6 +26,7 @@ public class BarsDAO {
     public List<Bars> getAllBars() {
         try (EntityManager em = emf.createEntityManager()) {
             TypedQuery<Bars> query = em.createQuery("FROM Bars", Bars.class);
+            System.out.println(query);
             return query.getResultList();
         }
     }
