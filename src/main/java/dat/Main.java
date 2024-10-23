@@ -2,6 +2,8 @@ package dat;
 
 import dat.config.HibernateConfig;
 import dat.daos.AuthorDAO;
+import dat.daos.BarsDAO;
+import dat.dtos.AuthorDTO;
 import dat.entities.Author;
 import io.javalin.Javalin;
 import jakarta.persistence.EntityManagerFactory;
@@ -13,10 +15,13 @@ public class Main {
         app.start(9090);
 
         AuthorDAO authorDAO = new AuthorDAO(emf);
+        BarsDAO barsDAO = new BarsDAO(emf);
 
-        Author author1 = Author.builder()
+
+        AuthorDTO author1 =
+                AuthorDTO.builder()
                 .name("Big Dick Patrick")
-                .description("Yuge")
+                .description("Yuge69")
                 .build();
 
         authorDAO.create(author1);
