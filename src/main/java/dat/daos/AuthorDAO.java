@@ -27,11 +27,13 @@ public class AuthorDAO {
         return instance;
     }
 
-    public void create(Author author) {
+    public AuthorDTO create(AuthorDTO authorDTO) {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
+            Author author = new Author(authorDTO);
             em.persist(author);
             em.getTransaction().commit();
+            return new AuthorDTO(author);
         }
     }
 
@@ -48,19 +50,19 @@ public class AuthorDAO {
         }
     }
 
-    public Author updateAuthor(Author author) {
+    public AuthorDTO updateAuthor(Integer integer, AuthorDTO authorDTO) {
         try (EntityManager em = emf.createEntityManager()) {
-            Author found = em.find(Author.class, author.getId());
+            AuthorDTO found = em.find(AuthorDTO.class, authorDTO.getId());
             if (found == null) {
                 throw new EntityNotFoundException("No author found with that ID");
             }
 
             em.getTransaction().begin();
-            if (author.getName() != null) {
-                found.setName(author.getName());
+            if (authorDTO.getName() != null) {
+                found.setName(authorDTO.getName());
             }
-            if (author.getDescription() != null) {
-                found.setDescription(author.getDescription());
+            if (authorDTO.getDescription() != null) {
+                found.setDescription(authorDTO.getDescription());
             }
             em.getTransaction().commit();
             return found;

@@ -1,5 +1,6 @@
 package dat.entities;
 
+import dat.dtos.BarsDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,4 +36,12 @@ public class Bars {
     @Column(name = "genre", nullable = false)
     @Enumerated(EnumType.STRING)
     private Genre genre;
+
+    public Bars(BarsDTO barsDTO) {
+        this.id = barsDTO.getId();
+        this.title = barsDTO.getTitle();
+        this.content = barsDTO.getContent();
+        this.date = barsDTO.getDate();
+        this.genre = Genre.valueOf(barsDTO.getGenre());
+    }
 }
