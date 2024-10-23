@@ -9,10 +9,8 @@ import java.time.LocalDate;
 @Table(name="bars")
 @Data
 @Builder
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class Bars {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +22,8 @@ public class Bars {
 
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
+    @ToString.Exclude  // Exclude from toString to avoid circular reference
+    @EqualsAndHashCode.Exclude  // Exclude from equals and hashCode to avoid circular reference
     private Author author;
 
     @Column(name = "content", nullable = false)
