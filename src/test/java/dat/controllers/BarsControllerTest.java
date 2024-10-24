@@ -96,7 +96,6 @@ class BarsControllerTest {
 
 
 
-
     @Test
     void testDeleteBar() {
         given()
