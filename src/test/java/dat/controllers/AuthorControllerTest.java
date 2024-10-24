@@ -17,14 +17,14 @@ import static org.hamcrest.CoreMatchers.equalTo;
 class AuthorControllerTest {
 
     private Javalin app;
-
+    EntityManagerFactory emfTest;
     private int port = 9090;
     private static String adminToken;
     private static String userToken;
 
     @BeforeAll
     void setup() {
-        EntityManagerFactory emfTest = HibernateConfig.getEntityManagerFactoryForTest();
+        emfTest = HibernateConfig.getEntityManagerFactoryForTest();
         app = ApplicationConfig.startServer(port);
         RestAssured.baseURI = "http://localhost";
         RestAssured.port = port;
@@ -42,7 +42,7 @@ class AuthorControllerTest {
     @Test
     public void testFindAuthorById() {
         given()
-                .header("Authorization", "Bearer " + userToken)
+                .header("Authorization", userToken)
                 .contentType("application/json")
                 .when()
                 .get("/api/authors/1")
@@ -53,15 +53,21 @@ class AuthorControllerTest {
 
     @Test
     public void testGetAllAuthors() {
-
+       given()
+                .header("Authorization", userToken)
+                .contentType("application/json")
+                .when()
+                .get("api/authors/")
+                .then()
+                .statusCode(200)
+                .body("size()", equalTo(14));
     }
-
     @Test
     void create() {
         given()
-                .header("Authorization", "Bearer " + userToken)
+                .header("Authorization", userToken)
                 .contentType("application/json")
-                .body("{\"name\":\"Author name\",\"description\":\"TEST\",\"bars\":\"TEST\"}")
+                .body("{\"name\":\"Author name\",\"description\":\"TEST\"}")
                 .when()
                 .post("/api/authors/")
                 .then()
@@ -75,9 +81,9 @@ class AuthorControllerTest {
         given()
                 .header("Authorization", adminToken)
                 .contentType("application/json")
-                .body("{\"name\":\"Updated name\",\"description\":\"Updated description\",\"bars\":\"Updated bar\"}")
+                .body("{\"name\":\"Updated name\",\"description\":\"Updated description\"}")
                 .when()
-                .put(baseURI+"/api/authors/1")
+                .put("/api/authors/1")
                 .then()
                 .statusCode(200)
                 .body("name", equalTo("Updated name"));
@@ -85,13 +91,27 @@ class AuthorControllerTest {
 
     @Test
     void deleteByID() {
+        given()
+                .header("Authorization", adminToken)
+                .contentType("application/json")
+                .when()
+                .delete("/api/authors/10")
+                .then()
+                .statusCode(204);
     }
 
     @Test
-    void validatePrimaryKey() {
-    }
+    void findAuthorByName() {
 
-    @Test
-    void validateEntity() {
+        // Virker ikke
+
+        given()
+                .header("Authorization", userToken)
+                .contentType("application/json")
+                .when()
+                .get("/api/authors/name/Patrick")
+                .then()
+                .statusCode(200)
+                .body("name", equalTo("Patrick Kjøller"));
     }
 }
