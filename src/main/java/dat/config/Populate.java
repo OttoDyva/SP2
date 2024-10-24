@@ -50,14 +50,12 @@ public class Populate {
             author5.setName("Steve Jobs");
             author5.setDescription("Businessman");
 
-            // Assign authors to their respective bars
             barsForAuthor1.forEach(bar -> bar.setAuthor(author1));
             barsForAuthor2.forEach(bar -> bar.setAuthor(author2));
             barsForAuthor3.forEach(bar -> bar.setAuthor(author3));
             barsForAuthor4.forEach(bar -> bar.setAuthor(author4));
             barsForAuthor5.forEach(bar -> bar.setAuthor(author5));
 
-            // Persist the authors and their bars
             em.persist(author1);
             em.persist(author2);
             em.persist(author3);

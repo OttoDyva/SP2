@@ -71,7 +71,6 @@ class AuthorDAOTest {
         List<AuthorDTO> authorList = authorDAO.getAllAuthors();
         assertFalse(authorList.isEmpty(), "Author list should not be empty after population.");
 
-        // Get the first author for testing
         AuthorDTO existingAuthorDTO = authorList.get(0);
 
         AuthorDTO updatedAuthorDTO = AuthorDTO.builder()
