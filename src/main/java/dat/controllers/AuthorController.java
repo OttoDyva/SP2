@@ -3,12 +3,15 @@ package dat.controllers;
 import dat.config.HibernateConfig;
 import dat.daos.AuthorDAO;
 import dat.dtos.AuthorDTO;
+import dat.dtos.BarsDTO;
 import dat.entities.Author;
+import dat.entities.Bars;
 import io.javalin.http.Context;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AuthorController {
 
@@ -17,6 +20,29 @@ public class AuthorController {
 
     public AuthorController() {
         this.authorDAO = AuthorDAO.getInstance(emf);
+    }
+
+    public void findAuthorByName(Context ctx) {
+        // request
+        String name = ctx.pathParam("name");
+        // DTO
+        List<Author> authorList = authorDAO.findAuthorByName(name);
+
+        List<AuthorDTO> authorDTOList = authorList.stream().map(AuthorDTO::new).collect(Collectors.toList());
+        // response
+        ctx.res().setStatus(200);
+        ctx.json(authorDTOList, AuthorDTO.class);
+    }
+
+    public void findAuthorByDescription(Context ctx) {
+        // request
+        String description = ctx.pathParam("description");
+        // DTO
+        List<Author> authorList = authorDAO.findAuthorByDescription(description);
+        List<AuthorDTO> authorDTOList = authorList.stream().map(AuthorDTO::new).collect(Collectors.toList());
+        // response
+        ctx.res().setStatus(200);
+        ctx.json(authorDTOList, AuthorDTO.class);
     }
 
     public void findAuthorById(Context ctx)  {

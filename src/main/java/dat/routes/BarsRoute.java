@@ -14,6 +14,8 @@ public class BarsRoute {
             post("/", barsController::create, Role.USER, Role.ADMIN);
             get("/", barsController::getAllBars, Role.ANYONE);
             get("/{id}", barsController::getBarsById, Role.ANYONE);
+            get("/title/{title}", barsController::getBarsByTitle, Role.ANYONE);
+            get("/genre/{genre}", barsController::getBarsByGenre, Role.ANYONE);
             put("/{id}", barsController::updateBars, Role.ADMIN);
             delete("/{id}", barsController::deleteBars, Role.ADMIN);
         };

@@ -18,6 +18,15 @@ GET {{url}}/authors
 Content-Type: application/json
 Authorization: Bearer {{jwt_token}}
 
+### Get Author by name
+GET {{url}}/authors/name/D
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+### Get Author by description
+GET {{url}}/authors/description/Com
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
 
 ### Update Author by id
 PUT {{url}}/authors/3

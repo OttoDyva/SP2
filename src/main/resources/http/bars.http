@@ -7,6 +7,16 @@ GET {{url}}/bars/7
 Content-Type: application/json
 Authorization: Bearer {{jwt_token}}
 
+### Find bars by title
+GET {{url}}/bars/title/the
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+### Find bars by genre
+GET {{url}}/bars/genre/humor
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
 ### Create a Bar
 
 POST {{url}}/bars

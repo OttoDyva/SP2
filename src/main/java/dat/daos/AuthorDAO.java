@@ -68,6 +68,25 @@ public class AuthorDAO {
         }
     }
 
+    public List<Author> findAuthorByName(String name) {
+        try (EntityManager em = emf.createEntityManager()) {
+            TypedQuery<Author> query = em.createQuery(
+                    "SELECT a FROM Author a WHERE LOWER(a.name) LIKE LOWER(:name)", Author.class);
+            query.setParameter("name", "%" + name + "%");
+            return query.getResultList();
+        }
+    }
+
+    public List<Author> findAuthorByDescription(String description) {
+        try (EntityManager em = emf.createEntityManager()) {
+            TypedQuery<Author> query = em.createQuery(
+                    "SELECT a FROM Author a WHERE LOWER(a.description) LIKE LOWER(:description)", Author.class);
+            query.setParameter("description", "%" + description + "%");
+            return query.getResultList();
+        }
+    }
+
+
     public AuthorDTO updateAuthor(Integer id, AuthorDTO authorDTO) {
         try (EntityManager em = emf.createEntityManager()) {
             Author found = em.find(Author.class, id);

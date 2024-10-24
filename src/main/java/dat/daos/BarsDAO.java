@@ -1,6 +1,7 @@
 package dat.daos;
 
 import dat.entities.Bars;
+import dat.entities.Genre;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityNotFoundException;
@@ -34,6 +35,22 @@ public class BarsDAO {
     public Bars findBarsById(int id) {
         try (EntityManager em = emf.createEntityManager()) {
             return em.find(Bars.class, id);
+        }
+    }
+
+    public List<Bars> findBarsByTitle(String title) {
+        try (EntityManager em = emf.createEntityManager()) {
+            TypedQuery<Bars> query = em.createQuery("SELECT b FROM Bars b WHERE LOWER(b.title) LIKE LOWER(:title)", Bars.class);
+            query.setParameter("title", "%" + title + "%");
+            return query.getResultList();
+        }
+    }
+
+    public List<Bars> findBarsByGenre(String genre) {
+        try (EntityManager em = emf.createEntityManager()) {
+            TypedQuery<Bars> query = em.createQuery("SELECT b FROM Bars b WHERE LOWER(b.genre) LIKE LOWER(:genre)", Bars.class);
+            query.setParameter("genre", "%" + genre + "%");
+            return query.getResultList();
         }
     }
 

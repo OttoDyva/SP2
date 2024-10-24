@@ -7,8 +7,11 @@ import dat.dtos.AuthorDTO;
 import dat.dtos.BarsDTO;
 import dat.entities.Author;
 import dat.entities.Bars;
+import dat.entities.Genre;
 import io.javalin.http.Context;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.TypedQuery;
 
 import java.util.List;
 import java.util.Map;
@@ -50,6 +53,26 @@ public class BarsController {
         System.out.println(barsDTO);
         ctx.res().setStatus(200);
         ctx.json(barsDTO, BarsDTO.class);
+    }
+
+    public void getBarsByTitle(Context ctx) {
+        String title = ctx.pathParam("title");
+        List<Bars> barsList = barsDAO.findBarsByTitle(title);
+
+        List<BarsDTO> barsDTOList = barsList.stream().map(BarsDTO::new).collect(Collectors.toList());
+
+        ctx.res().setStatus(200);
+        ctx.json(barsDTOList, BarsDTO.class);
+    }
+
+    public void getBarsByGenre(Context ctx) {
+        String genre = ctx.pathParam("genre");
+        List<Bars> barsList = barsDAO.findBarsByGenre(genre);
+
+        List<BarsDTO> barsDTOList = barsList.stream().map(BarsDTO::new).collect(Collectors.toList());
+
+        ctx.res().setStatus(200);
+        ctx.json(barsDTOList, BarsDTO.class);
     }
 
 
