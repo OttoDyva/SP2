@@ -93,7 +93,7 @@ class BarsDAOTest {
         Bars barToUpdate = barsList.get(0);
         barToUpdate.setTitle("Updated Title");
 
-        Bars updatedBar = barsDAO.updateBars(barToUpdate);
+        Bars updatedBar = barsDAO.updateBars(0, barToUpdate);
         assertNotNull(updatedBar);
         assertEquals("Updated Title", updatedBar.getTitle());
     }

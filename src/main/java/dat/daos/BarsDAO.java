@@ -54,7 +54,7 @@ public class BarsDAO {
         }
     }
 
-    public Bars updateBars(Bars bars) {
+    public Bars updateBars(Integer integer, Bars bars) {
         try (EntityManager em = emf.createEntityManager()) {
             Bars found = em.find(Bars.class, bars.getId());
             if (found == null) {

@@ -101,20 +101,13 @@ public class BarsController {
 
 
     public void updateBars(Context ctx) {
-        int id = ctx.pathParamAsClass("id", Integer.class)
-                .check(this::validatePrimaryKey, "Not a valid id")
-                .get();
-
-        BarsDTO barsDTO = validateEntity(ctx);
-
-
-
-        //barsToUpdate.setId(id);
-
-        //Bars updatedBars = barsDAO.updateBars(barsToUpdate);
-
+        // request
+        int id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
+        // dto
+        Bars updatedBars = barsDAO.updateBars(id, validateEntity(ctx));
+        // response
         ctx.res().setStatus(200);
-        //ctx.json(new BarsDTO(updatedBars));
+        ctx.json(updatedBars);
     }
 
 
@@ -134,8 +127,8 @@ public class BarsController {
         return barsDAO.findBarsById(integer) != null; // Ensure the ID exists
     }
 
-    public BarsDTO validateEntity(Context ctx) {
-        return ctx.bodyValidator(BarsDTO.class)
+    public Bars validateEntity(Context ctx) {
+        return ctx.bodyValidator(Bars.class)
                 .check(b -> b.getTitle() != null && !b.getTitle().isEmpty(), "Title must be set")
                 .check(b -> b.getContent() != null && !b.getContent().isEmpty(), "Content must be set")
                 .check(b -> b.getDate() != null, "Date must be set")
