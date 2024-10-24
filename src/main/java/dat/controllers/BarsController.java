@@ -125,7 +125,7 @@ public class BarsController {
 
         barsDAO.deleteById(id);
 
-        ctx.res().setStatus(200);
+        ctx.res().setStatus(204);
         ctx.json(Map.of("message", "Bar with id " + id + " successfully deleted"));
     }
 
