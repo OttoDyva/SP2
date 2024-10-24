@@ -7,6 +7,7 @@ import io.javalin.Javalin;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import jakarta.persistence.EntityManagerFactory;
+import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -94,8 +95,29 @@ class BarsControllerTest {
                 .body("title", equalTo("Updated Bar"));
     }
 
+    @Test
+    void getBarsByGenre() {
+        given()
+                .header("Authorization", userToken)
+                .contentType("application/json")
+                .when()
+                .get("/api/bars/genre/P")
+                .then()
+                .statusCode(200)
+                .body("genre[0]", CoreMatchers.equalTo("PHILOSOPHY"));
+    }
 
-
+    @Test
+    void getBarsByTitle() {
+        given()
+                .header("Authorization", userToken)
+                .contentType("application/json")
+                .when()
+                .get("/api/bars/title/M")
+                .then()
+                .statusCode(200)
+                .body("title[0]", CoreMatchers.equalTo("The Poem of the Moon"));
+    }
 
     @Test
     void testDeleteBar() {
