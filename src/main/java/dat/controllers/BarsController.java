@@ -7,11 +7,8 @@ import dat.dtos.AuthorDTO;
 import dat.dtos.BarsDTO;
 import dat.entities.Author;
 import dat.entities.Bars;
-import dat.entities.Genre;
 import io.javalin.http.Context;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.TypedQuery;
 
 import java.util.List;
 import java.util.Map;
@@ -99,15 +96,33 @@ public class BarsController {
     }
 
 
-
     public void updateBars(Context ctx) {
-        // request
-        int id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
-        // dto
-        Bars updatedBars = barsDAO.updateBars(id, validateEntity(ctx));
-        // response
-        ctx.res().setStatus(200);
-        ctx.json(updatedBars);
+        int id = Integer.parseInt(ctx.pathParam("id"));
+        BarsDTO barsDTO = ctx.bodyAsClass(BarsDTO.class);
+        Bars existingBar = barsDAO.findBarsById(id);
+        if (existingBar == null) {
+            ctx.status(404).result("Bar not found");
+            return;
+        }
+
+        existingBar.setTitle(barsDTO.getTitle());
+        existingBar.setContent(barsDTO.getContent());
+        existingBar.setDate(barsDTO.getDate());
+        existingBar.setGenre(barsDTO.getGenre());
+
+        Author author = existingBar.getAuthor();
+        if (author == null) {
+            author = new Author();
+        }
+        author.setName(barsDTO.getAuthorName());
+        author.setDescription(barsDTO.getAuthorDescription());
+
+        AuthorDTO updatedAuthorDTO = authorDAO.create(new AuthorDTO(author));
+        existingBar.setAuthor(new Author(updatedAuthorDTO));
+
+        barsDAO.updateBars(id, existingBar);
+
+        ctx.json(new BarsDTO(existingBar));
     }
 
 

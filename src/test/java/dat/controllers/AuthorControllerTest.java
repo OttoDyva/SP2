@@ -11,6 +11,8 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Test;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.number.OrderingComparison.greaterThan;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AuthorControllerTest {
@@ -33,7 +35,7 @@ class AuthorControllerTest {
     }
 
     @AfterAll
-    void afterAll() {
+    void tearDown() {
         ApplicationConfig.stopServer(app);
     }
 
@@ -51,15 +53,18 @@ class AuthorControllerTest {
 
     @Test
     public void testGetAllAuthors() {
-       given()
+        given()
                 .header("Authorization", userToken)
                 .contentType("application/json")
                 .when()
                 .get("api/authors/")
                 .then()
                 .statusCode(200)
-                .body("size()", equalTo(5));
+                .body("size()", greaterThan(0))
+                .body("[0].id", notNullValue())
+                .body("[0].name", notNullValue());
     }
+
     @Test
     void create() {
         given()

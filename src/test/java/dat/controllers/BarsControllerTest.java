@@ -9,7 +9,12 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.*;
+import org.hamcrest.CoreMatchers;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,8 +39,8 @@ class BarsControllerTest {
         Populate.populate(emfTest);
     }
 
-    @AfterAll
-    void afterAll() {
+    @AfterEach
+    void tearDown() {
         ApplicationConfig.stopServer(app);
     }
 
@@ -80,15 +85,41 @@ class BarsControllerTest {
 
     @Test
     void testUpdateBar() {
+        String updatedBarJson = "{ \"id\": 1, \"title\": \"Updated Bar\",\"content\":\"Updated Content\",\"genre\":\"PHILOSOPHY\",\"date\":\"2024-10-01\",\"authorName\":\"bob marley\",\"authorDescription\":\"Updated description\"}";
+
         given()
                 .header("Authorization", adminToken)
                 .contentType("application/json")
-                .body("{ \"title\": \"Updated Bar\",\"content\":\"Content of the bar\",\"genre\":\"PHILOSOPHY\",\"date\":\"2024-10-01\",\"authorName\":\"bob marley\",\"authorDescription\":\"fuck dig\"}")
+                .body(updatedBarJson)
                 .when()
-                .put("/api/bars/2")
+                .put("/api/bars/1")
                 .then()
                 .statusCode(200)
                 .body("title", equalTo("Updated Bar"));
+    }
+
+    @Test
+    void getBarsByGenre() {
+        given()
+                .header("Authorization", userToken)
+                .contentType("application/json")
+                .when()
+                .get("/api/bars/genre/P")
+                .then()
+                .statusCode(200)
+                .body("genre[0]", CoreMatchers.equalTo("PHILOSOPHY"));
+    }
+
+    @Test
+    void getBarsByTitle() {
+        given()
+                .header("Authorization", userToken)
+                .contentType("application/json")
+                .when()
+                .get("/api/bars/title/M")
+                .then()
+                .statusCode(200)
+                .body("title[0]", CoreMatchers.equalTo("The Poem of the Moon"));
     }
 
     @Test
@@ -96,7 +127,7 @@ class BarsControllerTest {
         given()
                 .header("Authorization", adminToken)
                 .when()
-                .delete("/api/bars/5")
+                .delete("/api/bars/11")
                 .then()
                 .statusCode(204);
     }

@@ -101,6 +101,32 @@ class BarsDAOTest {
     }
 
     @Test
+    void findBarsByGenre() {
+        List<Bars> barsList = barsDAO.getAllBars();
+        assertFalse(barsList.isEmpty(), "Bars list should not be empty for finding by genre.");
+
+        Bars firstBar = barsList.get(0);
+        Genre genre = firstBar.getGenre();
+        List<Bars> barsByGenre = barsDAO.findBarsByGenre(String.valueOf(genre));
+
+        assertThat(barsByGenre, is(not(empty())));
+        assertThat(barsByGenre.get(0).getGenre(), is(genre));
+    }
+
+    @Test
+    void findBarsByTitle() {
+        List<Bars> barsList = barsDAO.getAllBars();
+        assertFalse(barsList.isEmpty(), "Bars list should not be empty for finding by title.");
+
+        Bars firstBar = barsList.get(0);
+        String title = firstBar.getTitle();
+        List<Bars> barsByTitle = barsDAO.findBarsByTitle(title);
+
+        assertThat(barsByTitle, is(not(empty())));
+        assertThat(barsByTitle.get(0).getTitle(), is(title));
+    }
+
+    @Test
     void deleteById() {
         Bars newBar = new Bars();
         newBar.setTitle("Bar to be deleted");
