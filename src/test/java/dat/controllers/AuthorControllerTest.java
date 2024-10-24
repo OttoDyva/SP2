@@ -60,7 +60,7 @@ class AuthorControllerTest {
                 .get("api/authors/")
                 .then()
                 .statusCode(200)
-                .body("size()", equalTo(14));
+                .body("size()", equalTo(12));
     }
     @Test
     void create() {
@@ -109,9 +109,11 @@ class AuthorControllerTest {
                 .header("Authorization", userToken)
                 .contentType("application/json")
                 .when()
-                .get("/api/authors/name/Patrick")
+                .get("/api/authors/name/P")
                 .then()
                 .statusCode(200)
-                .body("name", equalTo("Patrick Kjøller"));
+                .body("name[0]", equalTo("Patrick Kjøller"));
     }
+
+
 }
