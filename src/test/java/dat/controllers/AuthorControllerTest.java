@@ -18,14 +18,13 @@ import static org.hamcrest.number.OrderingComparison.greaterThan;
 class AuthorControllerTest {
 
     private Javalin app;
-    EntityManagerFactory emfTest;
+    private static EntityManagerFactory emfTest = HibernateConfig.getEntityManagerFactoryForTest();
     private int port = 9090;
     private static String adminToken;
     private static String userToken;
 
     @BeforeAll
     void setup() {
-        emfTest = HibernateConfig.getEntityManagerFactoryForTest();
         app = ApplicationConfig.startServer(port);
         RestAssured.baseURI = "http://localhost";
         RestAssured.port = port;
@@ -71,7 +70,7 @@ class AuthorControllerTest {
         given()
                 .header("Authorization", userToken)
                 .contentType("application/json")
-                .body("{\"name\":\"Author name\",\"description\":\"TEST\"}")
+                .body("{\"name\":\"Author name\",\"description\":\"NY TEST JA TAK\"}")
                 .when()
                 .post("/api/authors/")
                 .then()
@@ -99,7 +98,7 @@ class AuthorControllerTest {
                 .header("Authorization", adminToken)
                 .contentType("application/json")
                 .when()
-                .delete("/api/authors/10")
+                .delete("/api/authors/2")
                 .then()
                 .statusCode(204);
     }
@@ -116,5 +115,15 @@ class AuthorControllerTest {
                 .body("name[0]", equalTo("Patrick Kjøller"));
     }
 
-
+    @Test
+    void findAuthorByDescription() {
+        given()
+                .header("Authorization", userToken)
+                .contentType("application/json")
+                .when()
+                .get("/api/authors/description/com")
+                .then()
+                .statusCode(200)
+                .body("description[0]", equalTo("Comedian"));
+    }
 }

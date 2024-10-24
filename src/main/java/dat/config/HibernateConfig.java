@@ -21,14 +21,24 @@ import java.util.Properties;
 public class HibernateConfig {
     private static EntityManagerFactory emf;
     private static EntityManagerFactory emfTest;
+    private static boolean isTest = false;
+
+    public static void setTest (Boolean test) {
+        isTest = test;
+    }
+
+    public static Boolean getTest() {
+        return isTest;
+    }
     public static EntityManagerFactory getEntityManagerFactory(String DBName) {
         if (emf == null)
-            emf = createEMF(false, DBName);
+            emf = createEMF(getTest(), DBName);
         return emf;
     }
     public static EntityManagerFactory getEntityManagerFactoryForTest() {
         if (emfTest == null)
-            emfTest = createEMF(true, "");
+            setTest(true);
+        emfTest = createEMF(getTest(), "");
         return emfTest;
     }
     // TODO: IMPORTANT: Add Entity classes here for them to be registered with Hibernate

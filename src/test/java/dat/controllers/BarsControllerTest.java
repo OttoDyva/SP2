@@ -2,11 +2,13 @@ package dat.controllers;
 
 import dat.config.ApplicationConfig;
 import dat.config.HibernateConfig;
+import dat.config.Populate;
 import dat.util.LoginUtil;
 import io.javalin.Javalin;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import jakarta.persistence.EntityManagerFactory;
+import org.junit.jupiter.api.*;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,23 +19,24 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BarsControllerTest {
 
     private Javalin app;
-    EntityManagerFactory emfTest;
+    private static EntityManagerFactory emfTest = HibernateConfig.getEntityManagerFactoryForTest();
     private int port = 9090;
     private static String adminToken;
     private static String userToken;
 
-    @BeforeEach
-    void setUp() {
-        emfTest = HibernateConfig.getEntityManagerFactoryForTest();
+    @BeforeAll
+    void setup() {
         app = ApplicationConfig.startServer(port);
         RestAssured.baseURI = "http://localhost";
         RestAssured.port = port;
         LoginUtil.createTestUsers(emfTest);
         adminToken = LoginUtil.getAdminToken();
         userToken = LoginUtil.getUserToken();
+        Populate.populate(emfTest);
     }
 
     @AfterEach
@@ -61,10 +64,10 @@ class BarsControllerTest {
         given()
                 .header("Authorization", adminToken)
                 .when()
-                .get("/api/bars/9")
+                .get("/api/bars/3")
                 .then()
                 .statusCode(200)
-                .body("id", equalTo(9));
+                .body("id", equalTo(3));
     }
 
     @Test

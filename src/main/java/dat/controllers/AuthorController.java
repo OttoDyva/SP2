@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class AuthorController {
-
     private EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory("bars");
     private AuthorDAO authorDAO = new AuthorDAO(emf);
 
