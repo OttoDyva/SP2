@@ -81,16 +81,21 @@ class BarsControllerTest {
 
     @Test
     void testUpdateBar() {
+        String updatedBarJson = "{ \"id\": 1, \"title\": \"Updated Bar\",\"content\":\"Updated Content\",\"genre\":\"PHILOSOPHY\",\"date\":\"2024-10-01\",\"authorName\":\"bob marley\",\"authorDescription\":\"Updated description\"}";
+
         given()
                 .header("Authorization", adminToken)
                 .contentType("application/json")
-                .body("{ \"title\": \"Updated Bar\",\"content\":\"Content of the bar\",\"genre\":\"PHILOSOPHY\",\"date\":\"2024-10-01\",\"authorName\":\"bob marley\",\"authorDescription\":\"fuck dig\"}")
+                .body(updatedBarJson)
                 .when()
                 .put("/api/bars/1")
                 .then()
                 .statusCode(200)
                 .body("title", equalTo("Updated Bar"));
     }
+
+
+
 
     @Test
     void testDeleteBar() {

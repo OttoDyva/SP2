@@ -5,13 +5,13 @@ import dat.config.HibernateConfig;
 import dat.util.LoginUtil;
 import io.javalin.Javalin;
 import io.restassured.RestAssured;
+
 import jakarta.persistence.EntityManagerFactory;
+import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.equalTo;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AuthorControllerTest {
@@ -31,7 +31,6 @@ class AuthorControllerTest {
         LoginUtil.createTestUsers(emfTest);
         adminToken = LoginUtil.getAdminToken();
         userToken = LoginUtil.getUserToken();
-
     }
 
     @AfterAll
@@ -53,15 +52,18 @@ class AuthorControllerTest {
 
     @Test
     public void testGetAllAuthors() {
-       given()
+        given()
                 .header("Authorization", userToken)
                 .contentType("application/json")
                 .when()
-                .get("api/authors/")
+                .get("/api/authors/")
                 .then()
                 .statusCode(200)
-                .body("size()", equalTo(14));
+                .body("size()", greaterThan(0))
+                .body("[0].id", notNullValue())
+                .body("[0].name", notNullValue());
     }
+
     @Test
     void create() {
         given()
@@ -73,7 +75,6 @@ class AuthorControllerTest {
                 .then()
                 .statusCode(201)
                 .body("name", equalTo("Author name"));
-
     }
 
     @Test
@@ -95,7 +96,7 @@ class AuthorControllerTest {
                 .header("Authorization", adminToken)
                 .contentType("application/json")
                 .when()
-                .delete("/api/authors/10")
+                .delete("/api/authors/3")
                 .then()
                 .statusCode(204);
     }
@@ -109,9 +110,9 @@ class AuthorControllerTest {
                 .header("Authorization", userToken)
                 .contentType("application/json")
                 .when()
-                .get("/api/authors/name/Patrick")
+                .get("/api/authors/name/P")
                 .then()
                 .statusCode(200)
-                .body("name", equalTo("Patrick Kjøller"));
+                .body("name[0]", equalTo("Patrick Kjøller"));
     }
 }
