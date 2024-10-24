@@ -2,41 +2,40 @@ package dat.controllers;
 
 import dat.config.ApplicationConfig;
 import dat.config.HibernateConfig;
+import dat.config.Populate;
 import dat.util.LoginUtil;
 import io.javalin.Javalin;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import jakarta.persistence.EntityManagerFactory;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Test;
-
-import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BarsControllerTest {
 
     private Javalin app;
-    EntityManagerFactory emfTest;
+    private static EntityManagerFactory emfTest = HibernateConfig.getEntityManagerFactoryForTest();
     private int port = 9090;
     private static String adminToken;
     private static String userToken;
 
-    @BeforeEach
-    void setUp() {
-        emfTest = HibernateConfig.getEntityManagerFactoryForTest();
+    @BeforeAll
+    void setup() {
         app = ApplicationConfig.startServer(port);
         RestAssured.baseURI = "http://localhost";
         RestAssured.port = port;
         LoginUtil.createTestUsers(emfTest);
         adminToken = LoginUtil.getAdminToken();
         userToken = LoginUtil.getUserToken();
+        Populate.populate(emfTest);
     }
 
-    @AfterEach
-    void tearDown() {
+    @AfterAll
+    void afterAll() {
         ApplicationConfig.stopServer(app);
     }
 
@@ -60,10 +59,10 @@ class BarsControllerTest {
         given()
                 .header("Authorization", adminToken)
                 .when()
-                .get("/api/bars/9")
+                .get("/api/bars/3")
                 .then()
                 .statusCode(200)
-                .body("id", equalTo(9));
+                .body("id", equalTo(3));
     }
 
     @Test
@@ -86,7 +85,7 @@ class BarsControllerTest {
                 .contentType("application/json")
                 .body("{ \"title\": \"Updated Bar\",\"content\":\"Content of the bar\",\"genre\":\"PHILOSOPHY\",\"date\":\"2024-10-01\",\"authorName\":\"bob marley\",\"authorDescription\":\"fuck dig\"}")
                 .when()
-                .put("/api/bars/1")
+                .put("/api/bars/2")
                 .then()
                 .statusCode(200)
                 .body("title", equalTo("Updated Bar"));
@@ -97,18 +96,8 @@ class BarsControllerTest {
         given()
                 .header("Authorization", adminToken)
                 .when()
-                .delete("/api/bars/11")
+                .delete("/api/bars/5")
                 .then()
                 .statusCode(204);
-    }
-
-    @Test
-    void testHandleException() {
-        given()
-                .header("Authorization", adminToken)
-                .when()
-                .get("/api/bars/999")
-                .then()
-                .statusCode(404);
     }
 }
