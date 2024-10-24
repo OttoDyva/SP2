@@ -2,14 +2,13 @@ package dat.controllers;
 
 import dat.config.ApplicationConfig;
 import dat.config.HibernateConfig;
+import dat.config.Populate;
 import dat.util.LoginUtil;
 import io.javalin.Javalin;
 import io.restassured.RestAssured;
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Test;
-
-import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
@@ -33,7 +32,7 @@ class AuthorControllerTest {
         LoginUtil.createTestUsers(emfTest);
         adminToken = LoginUtil.getAdminToken();
         userToken = LoginUtil.getUserToken();
-
+        Populate.populate(emfTest);
     }
 
     @AfterAll
@@ -107,9 +106,6 @@ class AuthorControllerTest {
 
     @Test
     void findAuthorByName() {
-
-        // Virker ikke
-
         given()
                 .header("Authorization", userToken)
                 .contentType("application/json")
