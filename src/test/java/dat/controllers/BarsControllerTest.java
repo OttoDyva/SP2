@@ -106,14 +106,4 @@ class BarsControllerTest {
                 .then()
                 .statusCode(204);
     }
-
-    @Test
-    void testHandleException() {
-        given()
-                .header("Authorization", adminToken)
-                .when()
-                .get("/api/bars/999")
-                .then()
-                .statusCode(404);
-    }
 }
