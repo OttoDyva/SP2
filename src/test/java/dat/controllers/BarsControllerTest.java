@@ -39,7 +39,7 @@ class BarsControllerTest {
         Populate.populate(emfTest);
     }
 
-    @AfterEach
+    @AfterAll
     void tearDown() {
         ApplicationConfig.stopServer(app);
     }
@@ -104,10 +104,10 @@ class BarsControllerTest {
                 .header("Authorization", userToken)
                 .contentType("application/json")
                 .when()
-                .get("/api/bars/genre/P")
+                .get("/api/bars/genre/HUMOR")
                 .then()
                 .statusCode(200)
-                .body("genre[0]", CoreMatchers.equalTo("PHILOSOPHY"));
+                .body("genre[0]", CoreMatchers.equalTo("HUMOR"));
     }
 
     @Test
@@ -127,7 +127,7 @@ class BarsControllerTest {
         given()
                 .header("Authorization", adminToken)
                 .when()
-                .delete("/api/bars/11")
+                .delete("/api/bars/5")
                 .then()
                 .statusCode(204);
     }
