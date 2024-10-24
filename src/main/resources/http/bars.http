@@ -32,6 +32,20 @@ Authorization: Bearer {{jwt_token}}
   "authorDescription": ""
 }
 
+### Update a bar
+PUT {{url}}/bars/2
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
+  "title": "updated",
+  "content": "update",
+  "date": "2001-09-11",
+  "genre": "PHILOSOPHY",
+  "authorName": "Osama",
+  "authorDescription": "Terrorist"
+}
+
 ### Delete a bar
 DELETE {{url}}/bars/5
 Content-Type: application/json
