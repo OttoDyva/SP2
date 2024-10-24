@@ -1,6 +1,8 @@
 package dat.security.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serial;
@@ -15,6 +17,8 @@ import java.util.Set;
 @Entity
 @Table(name = "roles")
 @NamedQueries(@NamedQuery(name = "Role.deleteAllRows", query = "DELETE from Role"))
+@Setter
+@Getter
 public class Role implements Serializable {
 
     @Serial

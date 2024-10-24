@@ -1,85 +1,54 @@
 package dat.controllers;
 
+import dat.config.ApplicationConfig;
 import dat.config.HibernateConfig;
-import dat.config.Populate;
-import dat.daos.AuthorDAO;
-import dat.dtos.AuthorDTO;
-import dat.entities.Author;
-import io.javalin.http.Context;
+import dat.util.LoginUtil;
+import io.javalin.Javalin;
+import io.restassured.RestAssured;
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static io.restassured.RestAssured.when;
-import static org.junit.jupiter.api.Assertions.*;
+import static io.restassured.RestAssured.baseURI;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.equalTo;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AuthorControllerTest {
 
-    private EntityManagerFactory emf;
-    private AuthorDAO authorDAO;
-    private AuthorController authorController;
+    private Javalin app;
 
-    private Context ctx;
-
+    private int port = 9090;
+    private static String adminToken;
+    private static String userToken;
 
     @BeforeAll
     void setup() {
-        emf = HibernateConfig.getEntityManagerFactoryForTest();
-        authorDAO = AuthorDAO.getInstance(emf);
-        Populate.main(null);
+        EntityManagerFactory emfTest = HibernateConfig.getEntityManagerFactoryForTest();
+        app = ApplicationConfig.startServer(port);
+        RestAssured.baseURI = "http://localhost";
+        RestAssured.port = port;
+        LoginUtil.createTestUsers(emfTest);
+        adminToken = LoginUtil.getAdminToken();
+        userToken = LoginUtil.getUserToken();
 
     }
 
     @AfterAll
     void tearDown() {
-        if (emf != null) {
-            emf.close();
-        }
+        ApplicationConfig.stopServer(app);
     }
 
     @Test
     public void testFindAuthorById() {
-        /*
-        ctx.pathParam("1");
-
-        AuthorController authorController = new AuthorController();
-
-        authorController.findAuthorById(ctx);
-
-        assertEquals(200, ctx.res().getStatus());
-        AuthorDTO authorDTO = (AuthorDTO) ctx.json(AuthorDTO.class);
-        assertNotNull(authorDTO);
-        assertEquals(1, authorDTO.getId());
-
-         */
-
-        /*
-        AuthorDTO request = AuthorDTO.builder()
-                .id(10)
-                .name("Author name")
-                .description("Author description")
-                .build();
-        AuthorDTO response = AuthorDTO.builder()
-                .id(11)
-                .name("Author name")
-                .description("Author description")
-                .build();
-
-        when(ctx.pathParamAsClass("id", Integer.class)).thenReturn(1);
-        when(authorDAO.findAuthorById(1)).thenReturn(response);
-        when(ctx.bodyValidator(AuthorDTO.class)).thenReturn(Validator.create(request));
-        when(authorDAO.create(request)).thenReturn(response);
-
-        authorController.create(ctx);
-
-        verify(ctx).status(201);  // Status 201 for created
-        verify(ctx).json(response);  // JSON response with created author
-
-         */
-
+        given()
+                .header("Authorization", "Bearer " + userToken)
+                .contentType("application/json")
+                .when()
+                .get("/api/authors/1")
+                .then()
+                .statusCode(200)
+                .body("id", equalTo(1));
     }
 
     @Test
@@ -89,10 +58,29 @@ class AuthorControllerTest {
 
     @Test
     void create() {
+        given()
+                .header("Authorization", "Bearer " + userToken)
+                .contentType("application/json")
+                .body("{\"name\":\"Author name\",\"description\":\"TEST\",\"bars\":\"TEST\"}")
+                .when()
+                .post("/api/authors/")
+                .then()
+                .statusCode(201)
+                .body("name", equalTo("Author name"));
+
     }
 
     @Test
     void updateAuthor() {
+        given()
+                .header("Authorization", adminToken)
+                .contentType("application/json")
+                .body("{\"name\":\"Updated name\",\"description\":\"Updated description\",\"bars\":\"Updated bar\"}")
+                .when()
+                .put(baseURI+"/api/authors/1")
+                .then()
+                .statusCode(200)
+                .body("name", equalTo("Updated name"));
     }
 
     @Test
