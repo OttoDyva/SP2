@@ -13,6 +13,7 @@ import org.junit.jupiter.api.*;
 import java.time.LocalDate;
 import java.util.List;
 
+import static dat.config.Populate.populate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
@@ -28,10 +29,11 @@ class BarsDAOTest {
 
     @BeforeAll
     void setUp() {
-        emf = HibernateConfig.getEntityManagerFactory("bars");
+        emf = HibernateConfig.getEntityManagerFactoryForTest();
         barsDAO = new BarsDAO(emf);
         authorDAO = AuthorDAO.getInstance(emf);
-        Populate.main(null);
+        Populate.populate(emf);
+
     }
 
     @AfterAll

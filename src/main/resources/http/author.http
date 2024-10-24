@@ -59,7 +59,7 @@ POST {{url}}/auth/register/
 POST {{url}}/auth/login/
 
 {
-    "username": "user",
+    "username": "testuser",
     "password": "test123"
 }
 

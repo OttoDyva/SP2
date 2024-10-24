@@ -25,7 +25,7 @@ class AuthorDAOTest {
     void setUp() {
         emf = HibernateConfig.getEntityManagerFactoryForTest();
         authorDAO = AuthorDAO.getInstance(emf);
-        Populate.main(null);
+        Populate.populate(emf);
     }
 
 

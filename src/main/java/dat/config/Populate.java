@@ -1,4 +1,3 @@
-
 package dat.config;
 
 import dat.entities.Author;
@@ -6,14 +5,18 @@ import dat.entities.Bars;
 import dat.entities.Genre;
 import jakarta.persistence.EntityManagerFactory;
 import org.jetbrains.annotations.NotNull;
+
 import java.time.LocalDate;
 import java.util.Set;
 
 public class Populate {
+
     public static void main(String[] args) {
-
         EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory("bars");
+        populate(emf);
+    }
 
+    public static void populate(EntityManagerFactory emf) {
         Set<Bars> barsForAuthor1 = getBarsForAuthor1();
         Set<Bars> barsForAuthor2 = getBarsForAuthor2();
         Set<Bars> barsForAuthor3 = getBarsForAuthor3();
@@ -47,12 +50,14 @@ public class Populate {
             author5.setName("Steve Jobs");
             author5.setDescription("Businessman");
 
+            // Assign authors to their respective bars
             barsForAuthor1.forEach(bar -> bar.setAuthor(author1));
             barsForAuthor2.forEach(bar -> bar.setAuthor(author2));
             barsForAuthor3.forEach(bar -> bar.setAuthor(author3));
             barsForAuthor4.forEach(bar -> bar.setAuthor(author4));
             barsForAuthor5.forEach(bar -> bar.setAuthor(author5));
 
+            // Persist the authors and their bars
             em.persist(author1);
             em.persist(author2);
             em.persist(author3);
@@ -77,8 +82,7 @@ public class Populate {
         bar2.setDate(LocalDate.of(2022, 3, 21));
         bar2.setGenre(Genre.POEM);
 
-        Bars[] barsArray = {bar1, bar2};
-        return Set.of(barsArray);
+        return Set.of(bar1, bar2);
     }
 
     @NotNull
@@ -95,15 +99,14 @@ public class Populate {
         bar2.setDate(LocalDate.of(2024, 4, 1));
         bar2.setGenre(Genre.HUMOR);
 
-        Bars[] barsArray = {bar1, bar2};
-        return Set.of(barsArray);
+        return Set.of(bar1, bar2);
     }
 
     @NotNull
     private static Set<Bars> getBarsForAuthor3() {
         Bars bar1 = new Bars();
         bar1.setTitle("The Joke of the Day");
-        bar1.setContent("Life is like a box of chocolates. It doesn’t last long if you’re fat");
+        bar1.setContent("Life is like a box of chocolates. It doesn’t last long if you’re fat.");
         bar1.setDate(LocalDate.of(2024, 2, 15));
         bar1.setGenre(Genre.HUMOR);
 
@@ -113,8 +116,7 @@ public class Populate {
         bar2.setDate(LocalDate.of(2024, 3, 1));
         bar2.setGenre(Genre.HUMOR);
 
-        Bars[] barsArray = {bar1, bar2};
-        return Set.of(barsArray);
+        return Set.of(bar1, bar2);
     }
 
     @NotNull
@@ -131,22 +133,17 @@ public class Populate {
         bar2.setDate(LocalDate.of(2024, 7, 1));
         bar2.setGenre(Genre.PHILOSOPHY);
 
-        Bars[] barsArray = {bar1, bar2};
-        return Set.of(barsArray);
+        return Set.of(bar1, bar2);
     }
 
     @NotNull
     private static Set<Bars> getBarsForAuthor5() {
         Bars bar1 = new Bars();
         bar1.setTitle("Life lesson");
-        bar1.setContent("Your time is limited, so don't waste it living someone else's life. Don't be trapped by dogma – which is living with the results of other people's thinking");
+        bar1.setContent("Your time is limited, so don't waste it living someone else's life. Don't be trapped by dogma – which is living with the results of other people's thinking.");
         bar1.setDate(LocalDate.of(2024, 8, 15));
         bar1.setGenre(Genre.MOTIVATIONAL);
 
-        Bars[] barsArray = {bar1};
-        return Set.of(barsArray);
+        return Set.of(bar1);
     }
 }
-
-
-
