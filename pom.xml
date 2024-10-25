@@ -20,7 +20,7 @@
         <token.security.version>1.0.1</token.security.version>
 
         <!--  Javalin    -->
-        <javalin.port>7070</javalin.port>
+        <javalin.port>9090</javalin.port>
         <DB_NAME>bars</DB_NAME>
     </properties>
 
