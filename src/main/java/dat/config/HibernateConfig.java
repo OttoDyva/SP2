@@ -96,9 +96,9 @@ public class HibernateConfig {
     }
     private static Properties setDevProperties(Properties props){
         String DBName = Utils.getPropertyValue("DB_NAME", "config.properties");
-        props.put("hibernate.connection.url", "jdbc:postgresql://64.226.120.63:5432/"+ DBName);
+        props.put("hibernate.connection.url", "jdbc:postgresql://161.35.23.1:5432/"+ DBName);
         props.put("hibernate.connection.username", "postgres");
-        props.put("hibernate.connection.password", "gruppebroersej");
+        props.put("hibernate.connection.password", "Fuckdig79");
         return props;
     }
     private static Properties setTestProperties(Properties props){
