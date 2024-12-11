@@ -39,7 +39,7 @@ Authorization: Bearer {{jwt_token}}
 }
 
 ### Delete Author by id
-DELETE {{url}}/authors/5
+DELETE {{url}}/authors/3
 Content-Type: application/json
 Authorization: Bearer {{jwt_token}}
 

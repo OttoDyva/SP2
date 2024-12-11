@@ -11,7 +11,7 @@ public class BarsRoute {
 
     protected EndpointGroup getRoutes() {
         return () -> {
-            post("/", barsController::create, Role.ANYONE);
+            post("/", barsController::create, Role.USER);
             get("/", barsController::getAllBars, Role.ANYONE);
             get("/{id}", barsController::getBarsById, Role.ANYONE);
             get("/title/{title}", barsController::getBarsByTitle, Role.ANYONE);
