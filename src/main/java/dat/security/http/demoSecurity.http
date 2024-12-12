@@ -1,6 +1,11 @@
 ### A simple get request to the test endpoint. No need for login
 GET {{url}}/auth/test/
 
+### Get all users
+GET {{url}}/auth/users/
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
 ### Create a new user - this one will only get a USER role by default
 POST {{url}}/auth/register/
 
@@ -13,8 +18,8 @@ POST {{url}}/auth/register/
 POST {{url}}/auth/login/
 
 {
-    "username": "user",
-    "password": "test123"
+    "username": "otto",
+    "password": "otto123"
 }
 
 > {%

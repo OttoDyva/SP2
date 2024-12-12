@@ -1,5 +1,6 @@
 package dat.daos;
 
+import dat.entities.Author;
 import dat.entities.Bars;
 import dat.entities.Genre;
 import jakarta.persistence.EntityManager;
@@ -19,7 +20,26 @@ public class BarsDAO {
     public void create(Bars bars) {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
+
+            // Check if an author with the given name exists
+            TypedQuery<Author> query = em.createQuery("SELECT a FROM Author a WHERE LOWER(a.name) = LOWER(:name)", Author.class);
+            query.setParameter("name", bars.getAuthor().getName());
+            List<Author> existingAuthors = query.getResultList();
+
+            Author author;
+            if (!existingAuthors.isEmpty()) {
+                // Use the existing author
+                author = existingAuthors.get(0);
+            } else {
+                // Create a new author if not found
+                author = bars.getAuthor();
+                em.persist(author);
+            }
+
+            // Associate the bar with the author
+            bars.setAuthor(author);
             em.persist(bars);
+
             em.getTransaction().commit();
         }
     }

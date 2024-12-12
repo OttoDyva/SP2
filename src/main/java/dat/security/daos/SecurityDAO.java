@@ -6,11 +6,9 @@ import dat.security.entities.User;
 import dat.security.exceptions.ApiException;
 import dat.security.exceptions.ValidationException;
 import dk.bugelhartmann.UserDTO;
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -83,6 +81,14 @@ public class SecurityDAO implements ISecurityDAO {
                 //em.merge(user);
             em.getTransaction().commit();
             return user;
+        }
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        try (EntityManager em = emf.createEntityManager()) {
+            TypedQuery<User> query = em.createQuery("FROM User", User.class);
+            return query.getResultList();
         }
     }
 }

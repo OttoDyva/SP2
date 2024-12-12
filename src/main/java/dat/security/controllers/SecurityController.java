@@ -3,6 +3,8 @@ package dat.security.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nimbusds.jose.JOSEException;
+import dat.dtos.BarsDTO;
+import dat.entities.Bars;
 import dat.utils.Utils;
 import dat.config.HibernateConfig;
 import dat.security.daos.ISecurityDAO;
@@ -14,6 +16,7 @@ import dat.security.exceptions.ValidationException;
 import dk.bugelhartmann.ITokenSecurity;
 import dk.bugelhartmann.TokenSecurity;
 import dk.bugelhartmann.UserDTO;
+import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.UnauthorizedResponse;
@@ -25,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -48,6 +53,29 @@ public class SecurityController implements ISecurityController {
         securityDAO = new SecurityDAO(HibernateConfig.getEntityManagerFactory("bars"));
         return instance;
     }
+
+    public void getAllUsers(Context ctx) {
+        try {
+            // Retrieve the list of users from the DAO
+            List<User> userList = securityDAO.getAllUsers();
+
+            // Map the users to avoid exposing sensitive data (e.g., hashed passwords)
+            List<Object> userViews = userList.stream()
+                    .map(user -> Map.of(
+                            "username", user.getUsername(),
+                            "roles", user.getRolesAsStrings()
+                    ))
+                    .collect(Collectors.toList());
+
+            // Set response status and return JSON of the processed list
+            ctx.res().setStatus(200);
+            ctx.json(userViews);
+        } catch (Exception e) {
+            ctx.status(500).json(Map.of("error", "Failed to retrieve users", "details", e.getMessage()));
+        }
+    }
+
+
 
     @Override
     public Handler login() {
