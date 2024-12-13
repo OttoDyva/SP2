@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -75,7 +76,20 @@ public class SecurityController implements ISecurityController {
         }
     }
 
+    public void deleteUser(Context ctx) {
+        int id = ctx.pathParamAsClass("id", Integer.class)
+                .check(this::validatePrimaryKey, "Not a valid id")
+                .get();
 
+        securityDAO.deleteById(id);
+
+        ctx.res().setStatus(204);
+        ctx.json(Map.of("message", "User with id " + id + " successfully deleted"));
+    }
+
+    public boolean validatePrimaryKey(Integer integer) {
+        return securityDAO.findUserById(integer) != null; // Ensure the ID exists
+    }
 
     @Override
     public Handler login() {

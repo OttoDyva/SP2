@@ -24,6 +24,7 @@ public class SecurityRoutes {
                 post("/login", securityController.login(), Role.ANYONE);
                 post("/register", securityController.register(), Role.ANYONE);
                 post("/user/addrole", securityController.addRole(), Role.USER);
+                delete("/user/{id}", securityController::deleteUser, Role.ADMIN);
             });
         };
     }

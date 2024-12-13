@@ -1,6 +1,7 @@
 package dat.security.daos;
 
 
+import dat.entities.Bars;
 import dat.security.entities.Role;
 import dat.security.entities.User;
 import dat.security.exceptions.ApiException;
@@ -40,6 +41,23 @@ public class SecurityDAO implements ISecurityDAO {
             if (!user.verifyPassword(password))
                 throw new ValidationException("Wrong password");
             return new UserDTO(user.getUsername(), user.getRoles().stream().map(r -> r.getRoleName()).collect(Collectors.toSet()));
+        }
+    }
+
+    public User findUserById(int id) {
+        try (EntityManager em = emf.createEntityManager()) {
+            return em.find(User.class, id);
+        }
+    }
+
+    public void deleteById(Integer integer) {
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            User user = findUserById(integer);
+            if (user != null) {
+                em.remove(user);
+            }
+            em.getTransaction().commit();
         }
     }
 
@@ -91,5 +109,6 @@ public class SecurityDAO implements ISecurityDAO {
             return query.getResultList();
         }
     }
+
 }
 

@@ -18,8 +18,8 @@ public class AuthorRoute {
             get("/{id}", authorController::findAuthorById, Role.ANYONE);
             get("/name/{name}", authorController::findAuthorByName, Role.ANYONE);
             get("/description/{description}", authorController::findAuthorByDescription, Role.ANYONE);
-            put("/{id}", authorController::updateAuthor, Role.ANYONE);
-            delete("/{id}", authorController::deleteByID, Role.ANYONE);
+            put("/{id}", authorController::updateAuthor, Role.ADMIN);
+            delete("/{id}", authorController::deleteByID, Role.ADMIN);
         };
     }
 }

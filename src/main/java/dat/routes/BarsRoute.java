@@ -11,13 +11,13 @@ public class BarsRoute {
 
     protected EndpointGroup getRoutes() {
         return () -> {
-            post("/", barsController::create, Role.USER);
+            post("/", barsController::create, Role.USER, Role.ADMIN);
             get("/", barsController::getAllBars, Role.ANYONE);
             get("/{id}", barsController::getBarsById, Role.ANYONE);
             get("/title/{title}", barsController::getBarsByTitle, Role.ANYONE);
             get("/genre/{genre}", barsController::getBarsByGenre, Role.ANYONE);
-            put("/{id}", barsController::updateBars, Role.ANYONE);
-            delete("/{id}", barsController::deleteBars, Role.ANYONE);
+            put("/{id}", barsController::updateBars, Role.ADMIN); // Måske gør det muligt for users at edit sine egne bars
+            delete("/{id}", barsController::deleteBars, Role.ADMIN);
         };
     }
 }

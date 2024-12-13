@@ -48,6 +48,11 @@ Authorization: Bearer {{jwt_token}}
 Accept: application/json
 Authorization: Bearer {{jwt_token}}
 
+### Delete user
+DELETE {{url}}/auth/user/6/
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
+
 ### UPDATE
 
 PUT  {{url}}/poem/1
