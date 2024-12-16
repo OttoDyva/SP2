@@ -51,16 +51,16 @@ GET {{url}}/auth/test/
 POST {{url}}/auth/register/
 
 {
-    "username": "testuser",
-    "password": "test123"
+    "username": "kaffe",
+    "password": "kaffe123"
 }
 
 ###
 POST {{url}}/auth/login/
 
 {
-    "username": "testuser",
-    "password": "test123"
+    "username": "kaffe",
+    "password": "kaffe123"
 }
 
 > {%

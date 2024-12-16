@@ -8,6 +8,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Purpose: To handle security in the API
@@ -40,14 +41,13 @@ public class User implements Serializable, ISecurityUser {
 
     public Set<String> getRolesAsStrings() {
         if (roles.isEmpty()) {
-            return null;
+            return new HashSet<>(); // Return an empty set
         }
-        Set<String> rolesAsStrings = new HashSet<>();
-        roles.forEach((role) -> {
-            rolesAsStrings.add(role.getRoleName());
-        });
-        return rolesAsStrings;
+        return roles.stream()
+                .map(Role::getRoleName)
+                .collect(Collectors.toSet());
     }
+
 
     public boolean verifyPassword(String pw) {
         return BCrypt.checkpw(pw, this.password);
@@ -64,12 +64,13 @@ public class User implements Serializable, ISecurityUser {
     }
 
     public void addRole(Role role) {
-        if (role == null) {
+        if (role == null || roles.contains(role)) { // Avoid adding null or duplicate roles
             return;
         }
         roles.add(role);
         role.getUsers().add(this);
     }
+
 
     public void removeRole(String userRole) {
         roles.stream()
@@ -80,5 +81,28 @@ public class User implements Serializable, ISecurityUser {
                     role.getUsers().remove(this);
                 });
     }
+
+
+    public void clearRoles() {
+        for (Role role : new HashSet<>(roles)) {
+            roles.remove(role);
+            role.getUsers().remove(this);
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return username != null && username.equals(user.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return username != null ? username.hashCode() : 0;
+    }
+
+
 }
 

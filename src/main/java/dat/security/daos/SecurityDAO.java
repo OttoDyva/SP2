@@ -1,16 +1,15 @@
 package dat.security.daos;
 
 
-import dat.entities.Bars;
 import dat.security.entities.Role;
 import dat.security.entities.User;
 import dat.security.exceptions.ApiException;
 import dat.security.exceptions.ValidationException;
 import dk.bugelhartmann.UserDTO;
 import jakarta.persistence.*;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -36,30 +35,14 @@ public class SecurityDAO implements ISecurityDAO {
         try (EntityManager em = getEntityManager()) {
             User user = em.find(User.class, username);
             if (user == null)
-                throw new EntityNotFoundException("No user found with username: " + username); //RuntimeException
-            user.getRoles().size(); // force roles to be fetched from db
+                throw new EntityNotFoundException("No user found with username: " + username);
+            user.getRoles().size();
             if (!user.verifyPassword(password))
                 throw new ValidationException("Wrong password");
             return new UserDTO(user.getUsername(), user.getRoles().stream().map(r -> r.getRoleName()).collect(Collectors.toSet()));
         }
     }
 
-    public User findUserById(int id) {
-        try (EntityManager em = emf.createEntityManager()) {
-            return em.find(User.class, id);
-        }
-    }
-
-    public void deleteById(Integer integer) {
-        try (EntityManager em = emf.createEntityManager()) {
-            em.getTransaction().begin();
-            User user = findUserById(integer);
-            if (user != null) {
-                em.remove(user);
-            }
-            em.getTransaction().commit();
-        }
-    }
 
     @Override
     public User createUser(String username, String password) {
@@ -77,7 +60,7 @@ public class SecurityDAO implements ISecurityDAO {
             em.persist(userEntity);
             em.getTransaction().commit();
             return userEntity;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw new ApiException(400, e.getMessage());
         }
@@ -85,22 +68,30 @@ public class SecurityDAO implements ISecurityDAO {
 
     @Override
     public User addRole(UserDTO userDTO, String newRole) {
-        try (EntityManager em = getEntityManager()) {
-            User user = em.find(User.class, userDTO.getUsername());
-            if (user == null)
-                throw new EntityNotFoundException("No user found with username: " + userDTO.getUsername());
+        EntityManager em = getEntityManager();
+        try {
             em.getTransaction().begin();
-                Role role = em.find(Role.class, newRole);
-                if (role == null) {
-                    role = new Role(newRole);
-                    em.persist(role);
-                }
+            User user = em.find(User.class, userDTO.getUsername());
+            if (user == null) {
+                throw new EntityNotFoundException("No user found with username: " + userDTO.getUsername());
+            }
+
+            Role role = findOrCreateRole(newRole);
+            if (!user.getRoles().contains(role)) {
                 user.addRole(role);
-                //em.merge(user);
+                em.merge(user);
+            }
+
             em.getTransaction().commit();
             return user;
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw new ApiException(500, "Failed to add role: " + newRole);
+        } finally {
+            em.close();
         }
     }
+
 
     @Override
     public List<User> getAllUsers() {
@@ -110,5 +101,87 @@ public class SecurityDAO implements ISecurityDAO {
         }
     }
 
+    @Override
+    public User findUserByUsername(String username) {
+        try (EntityManager em = getEntityManager()) {
+            return em.find(User.class, username);
+        }
+    }
+
+    @Override
+    public boolean deleteByUsername(String username) {
+        try (EntityManager em = getEntityManager()) {
+            User user = em.find(User.class, username);
+            if (user != null) {
+                em.getTransaction().begin();
+                em.remove(user);
+                em.getTransaction().commit();
+                return true;
+            }
+            return false;
+        }
+    }
+
+    @Override
+    public Role findOrCreateRole(String roleName) {
+        try (EntityManager em = getEntityManager()) {
+            Role role = em.find(Role.class, roleName);
+            if (role == null) {
+                em.getTransaction().begin();
+                role = new Role(roleName);
+                em.persist(role);
+                em.getTransaction().commit();
+            }
+            return role;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ApiException(500, "Failed to find or create role: " + roleName);
+        }
+    }
+
+    @Override
+    public void updateUser(String username, String password, List<String> roles) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+
+            User user = em.find(User.class, username);
+            if (user == null) {
+                throw new EntityNotFoundException("No user found with username: " + username);
+            }
+
+            if (password != null && !password.isEmpty()) {
+                user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
+            }
+
+            if (roles != null && !roles.isEmpty()) {
+                user.getRoles().clear();
+
+                for (String roleName : roles) {
+                    Role role = em.createQuery("SELECT r FROM Role r WHERE r.name = :name", Role.class)
+                            .setParameter("name", roleName)
+                            .getResultStream()
+                            .findFirst()
+                            .orElseGet(() -> {
+                                Role newRole = new Role(roleName);
+                                em.persist(newRole);
+                                return newRole;
+                            });
+
+                    user.addRole(role);
+                }
+            }
+
+            em.merge(user);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new ApiException(500, "Failed to update user: " + e.getMessage());
+        } finally {
+            em.close();
+        }
+    }
 }
 

@@ -3,9 +3,6 @@ package dat.security.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nimbusds.jose.JOSEException;
-import dat.dtos.BarsDTO;
-import dat.entities.Bars;
-import dat.utils.Utils;
 import dat.config.HibernateConfig;
 import dat.security.daos.ISecurityDAO;
 import dat.security.daos.SecurityDAO;
@@ -13,6 +10,7 @@ import dat.security.entities.User;
 import dat.security.exceptions.ApiException;
 import dat.security.exceptions.NotAuthorizedException;
 import dat.security.exceptions.ValidationException;
+import dat.utils.Utils;
 import dk.bugelhartmann.ITokenSecurity;
 import dk.bugelhartmann.TokenSecurity;
 import dk.bugelhartmann.UserDTO;
@@ -30,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,13 +36,14 @@ import java.util.stream.Collectors;
  * Author: Thomas Hartmann
  */
 public class SecurityController implements ISecurityController {
-    ObjectMapper objectMapper = new ObjectMapper();
-    ITokenSecurity tokenSecurity = new TokenSecurity();
     private static ISecurityDAO securityDAO;
     private static SecurityController instance;
     private static Logger logger = LoggerFactory.getLogger(SecurityController.class);
+    ObjectMapper objectMapper = new ObjectMapper();
+    ITokenSecurity tokenSecurity = new TokenSecurity();
 
-    private SecurityController() { }
+    private SecurityController() {
+    }
 
     public static SecurityController getInstance() { // Singleton because we don't want multiple instances of the same class
         if (instance == null) {
@@ -76,25 +74,51 @@ public class SecurityController implements ISecurityController {
         }
     }
 
+    public Handler editUser() {
+        return ctx -> {
+            try {
+                String username = ctx.pathParam("username");
+
+                Map<String, Object> updates = ctx.bodyAsClass(Map.class);
+
+                String password = updates.containsKey("password") ? updates.get("password").toString() : null;
+                List<String> roles = updates.containsKey("roles") ? (List<String>) updates.get("roles") : null;
+
+                // Update the user
+                securityDAO.updateUser(username, password, roles);
+
+                ctx.status(200).json(Map.of("msg", "User updated successfully"));
+            } catch (EntityNotFoundException e) {
+                ctx.status(404).json(Map.of("msg", "User not found"));
+            } catch (Exception e) {
+                ctx.status(500).json(Map.of("msg", "Failed to update user", "error", e.getMessage()));
+            }
+        };
+    }
+
+
+
     public void deleteUser(Context ctx) {
-        int id = ctx.pathParamAsClass("id", Integer.class)
-                .check(this::validatePrimaryKey, "Not a valid id")
-                .get();
-
-        securityDAO.deleteById(id);
-
-        ctx.res().setStatus(204);
-        ctx.json(Map.of("message", "User with id " + id + " successfully deleted"));
+        String username = ctx.pathParam("username");
+        try {
+            boolean deleted = securityDAO.deleteByUsername(username);
+            if (deleted) {
+                ctx.status(HttpStatus.NO_CONTENT);
+            } else {
+                ctx.status(HttpStatus.NOT_FOUND).json(Map.of("msg", "User not found"));
+            }
+        } catch (Exception e) {
+            ctx.status(HttpStatus.INTERNAL_SERVER_ERROR).json(Map.of("msg", "Failed to delete user"));
+        }
     }
 
-    public boolean validatePrimaryKey(Integer integer) {
-        return securityDAO.findUserById(integer) != null; // Ensure the ID exists
-    }
+
+
 
     @Override
     public Handler login() {
         return (ctx) -> {
-            ObjectNode returnObject = objectMapper.createObjectNode(); // for sending json messages back to the client
+            ObjectNode returnObject = objectMapper.createObjectNode();
             try {
                 UserDTO user = ctx.bodyAsClass(UserDTO.class);
                 UserDTO verifiedUser = securityDAO.getVerifiedUser(user.getUsername(), user.getPassword());
@@ -169,12 +193,12 @@ public class SecurityController implements ISecurityController {
             throw new UnauthorizedResponse("You need to log in, dude!");
         }
         Set<String> roleNames = allowedRoles.stream()
-                   .map(RouteRole::toString)  // Convert RouteRoles to  Set of Strings
-                   .collect(Collectors.toSet());
+                .map(RouteRole::toString)  // Convert RouteRoles to  Set of Strings
+                .collect(Collectors.toSet());
         return user.getRoles().stream()
-                   .map(String::toUpperCase)
-                   .anyMatch(roleNames::contains);
-        }
+                .map(String::toUpperCase)
+                .anyMatch(roleNames::contains);
+    }
 
     @Override
     public String createToken(UserDTO user) {
@@ -230,7 +254,6 @@ public class SecurityController implements ISecurityController {
                 ctx.status(404).json("{\"msg\": \"User not found\"}");
 
 
-                
             }
         };
     }
