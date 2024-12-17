@@ -24,12 +24,12 @@ Content-Type: application/json
 Authorization: Bearer {{jwt_token}}
 
 {
-  "title": "",
-  "content": "",
-  "date": "0000-00-00",
-  "genre": "",
-  "authorName": "",
-  "authorDescription": ""
+  "title": "Kuglepen",
+  "content": "Kuglepen",
+  "date": "2024-12-12",
+  "genre": "SONG",
+  "authorName": "Kuglepen",
+  "authorDescription": "Kuglepen"
 }
 
 ### Update a bar

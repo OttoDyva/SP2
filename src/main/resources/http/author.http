@@ -59,8 +59,8 @@ POST {{url}}/auth/register/
 POST {{url}}/auth/login/
 
 {
-    "username": "kaffe",
-    "password": "kaffe123"
+    "username": "bekhan",
+    "password": "bekhan123456"
 }
 
 > {%

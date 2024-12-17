@@ -15,6 +15,7 @@ public class BarsDTO {
     private String content;
     private LocalDate date;
     private Genre genre;
+    private Integer authorId;
     private String authorName;
     private String authorDescription;
 
@@ -24,6 +25,7 @@ public class BarsDTO {
         this.content = bars.getContent();
         this.date = bars.getDate();
         this.genre = bars.getGenre();
+        this.authorId = bars.getAuthor() != null ? bars.getAuthor().getId() : null;
         this.authorName = bars.getAuthor() != null ? bars.getAuthor().getName() : null;
         this.authorDescription = bars.getAuthor() != null ? bars.getAuthor().getDescription() : null;
     }
