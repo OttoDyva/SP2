@@ -76,24 +76,26 @@ public class BarsController {
     public void create(Context ctx) {
         BarsDTO barsDTO = ctx.bodyAsClass(BarsDTO.class);
 
-        Author author = new Author();
-        author.setName(barsDTO.getAuthorName());
-        author.setDescription(barsDTO.getAuthorDescription());
+        String authorName = barsDTO.getAuthorName().trim();
+        String authorDescription = barsDTO.getAuthorDescription().trim();
 
-        AuthorDTO createdAuthorDTO = authorDAO.create(new AuthorDTO(author));
+        Author author = new Author();
+        author.setName(authorName);
+        author.setDescription(authorDescription);
 
         Bars bars = new Bars();
         bars.setTitle(barsDTO.getTitle());
         bars.setContent(barsDTO.getContent());
         bars.setDate(barsDTO.getDate());
         bars.setGenre(barsDTO.getGenre());
-        bars.setAuthor(new Author(createdAuthorDTO));
+        bars.setAuthor(author);
 
         barsDAO.create(bars);
 
         ctx.res().setStatus(201);
         ctx.json(new BarsDTO(bars));
     }
+
 
 
     public void updateBars(Context ctx) {

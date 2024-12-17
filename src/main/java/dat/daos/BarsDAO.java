@@ -2,7 +2,6 @@ package dat.daos;
 
 import dat.entities.Author;
 import dat.entities.Bars;
-import dat.entities.Genre;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,28 +20,35 @@ public class BarsDAO {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
 
-            // Check if an author with the given name exists
-            TypedQuery<Author> query = em.createQuery("SELECT a FROM Author a WHERE LOWER(a.name) = LOWER(:name)", Author.class);
-            query.setParameter("name", bars.getAuthor().getName());
+            String cleanAuthorName = bars.getAuthor().getName().trim().toLowerCase();
+
+            TypedQuery<Author> query = em.createQuery(
+                    "SELECT a FROM Author a WHERE LOWER(a.name) = :name", Author.class);
+            query.setParameter("name", cleanAuthorName);
+
             List<Author> existingAuthors = query.getResultList();
 
             Author author;
             if (!existingAuthors.isEmpty()) {
-                // Use the existing author
                 author = existingAuthors.get(0);
+                System.out.println("Existing author found: " + author.getName());
             } else {
-                // Create a new author if not found
-                author = bars.getAuthor();
+                author = new Author();
+                author.setName(bars.getAuthor().getName().trim());
+                author.setDescription(bars.getAuthor().getDescription().trim());
                 em.persist(author);
+                System.out.println("New author created: " + author.getName());
             }
 
-            // Associate the bar with the author
             bars.setAuthor(author);
             em.persist(bars);
 
             em.getTransaction().commit();
+        } catch (Exception e) {
+            throw new RuntimeException("Error creating Bars entity: " + e.getMessage());
         }
     }
+
 
     public List<Bars> getAllBars() {
         try (EntityManager em = emf.createEntityManager()) {
